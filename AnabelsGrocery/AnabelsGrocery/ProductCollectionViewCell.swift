@@ -61,6 +61,6 @@ class ProductCollectionViewCell: UICollectionViewCell {
     func update(product: Product) {
         productImageView.image = UIImage(named: product.image)
         nameLabel.text = product.name
-        priceLabel.text = "\(product.price)"
+        priceLabel.text = "$\(product.price)"
     }
 }
