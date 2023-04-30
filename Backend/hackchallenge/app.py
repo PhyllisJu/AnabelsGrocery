@@ -41,7 +41,6 @@ def failure_response(message, code=404):
 #     return "Hello" + os.environ.get("NAME")
 
 
-
 @app.route("/inventories/")
 def get_inventories():
     """
@@ -51,18 +50,16 @@ def get_inventories():
     for inventory in Inventory.query.all():  #query.all() / Task in an SQLAlchemy object of class db.Model
         inventories.append(inventory.serialize()) #serialize takes in a python object and turns into a dictionary format to user
 
-    return success_response({"tasks": inventories})
+    return success_response({"inventories": inventories})
 
 
 
 @app.route("/inventories/", methods=["POST"])
-def create_task():
+def create_inventory():
     """
     Endpoint for creating a new task
     """
     body = json.loads(request.data)  
-    # Task is like a row of the table in db
-    # represententing each row of the table as an object
     new_inventory= Inventory(
         image = body.get("image"),
         name = body.get("name"),
@@ -112,59 +109,105 @@ def get_task(inventory_id):
 #     db.session.commit()
 #     return success_response(task.serialize())
 
-# -- SUBTASK ROUTES ---------------------------------------------------
+# -- CATEGORY ROUTES---------------------------------------------------
 
-
-
-
-# -- SUBTASK ROUTES ---------------------------------------------------
-
-
-@app.route("/tasks/<int:task_id>/subtasks/", methods=["POST"])
-def create_subtask(task_id):
-    """
-    Endpoint for creating a subtask
-    for a task by id
-    """
-    task = Task.query.filter_by(id = task_id).first()
-    if task is None:
-        return failure_response("Task not found!")
-    body = json.loads(request.data)
-    new_subtask = Subtask(
-        description = body.get("description"),
-        done = body.get("done"),
-        task_id = task_id
-    )
-
-    db.session.add(new_subtask)
-    db.session.commit()
-    return success_response(new_subtask.serialize())
-    
-
-
-# -- CATEGORY ROUTES --------------------------------------------------
-
-
-@app.route("/tasks/<int:task_id>/category/", methods=["POST"])
-def assign_category(task_id):
+@app.route("/inventories/<int:inventory_id>/category/", methods=["POST"])
+def assign_category(inventory_id):
     """
     Endpoint for assigning a category
-    to a task by id
+    to an inventory by id
     """
-    task = Task.query.filter_by(id = task_id).first()
-    if task is None:
+    inventory = Inventory.query.filter_by(id = inventory_id).first()
+    if inventory is None:
         return failure_response("Task not found!")
+    
     body = json.loads(request.data)
+    name = body.get("name")
     description = body.get("description")
-    color = body.get("color")
 
-    #create new category if it doesn't exist, otherwise assign exisiting one
-    category = Category.query.filter_by(color = color).first()
+    category = Category.query.filter_by(name = name).first()
     if category is None:
-        category = Category(description= description, color= color)
-    task.categories.append(category)
+        category = Category(name = name, description= description)
+    inventory.categories.append(category)
     db.session.commit()
     return success_response(category.serialize())
+
+
+@app.route("/categories/", methods=["GET"])
+def get_all_categories():
+    """
+    Endpoint for getting all inventories
+    """
+    categories = []
+    for category in Category.query.all(): 
+        categories.append(category.serialize()) 
+    return success_response({"categories": categories})
+
+
+@app.route("/categories/<int:category_id>/", methods=["GET"])
+def get_category(category_id):
+    """
+    Endpoint for getting a category by id
+    """
+    category = Category.query.filter_by(id = category_id).first()
+    if category is None:
+        return failure_response("Category not found!")
+    return success_response(category.serialize())
+
+
+@app.route("/categories/", methods=["GET"])
+def get_categories():
+    """
+    Endpoint for getting multiple categories by ids
+    """
+    length :int = request.args["length"]
+    category_id_list =[]
+    for i in range(length):
+        category_id_list.append(request.args[f"c{i}"])
+
+    response = []
+    for category_id in category_id_list:
+      category = Category.query.filter_by(id = category_id).first()
+      if category is None:
+        return failure_response("Category not found!")
+      response.append(category.serialize())
+      
+    return success_response({"categories": response })
+
+# -- MENU ROUTES---------------------------------------------------
+
+
+
+
+#---------------------------------reference from demo 5-------------------------
+#---------------------------------reference from demo 5-------------------------   
+
+# -- SUBTASK ROUTES ---------------------------------------------------
+
+
+# @app.route("/tasks/<int:task_id>/subtasks/", methods=["POST"])
+# def create_subtask(task_id):
+#     """
+#     Endpoint for creating a subtask
+#     for a task by id
+#     """
+#     task = Task.query.filter_by(id = task_id).first()
+#     if task is None:
+#         return failure_response("Task not found!")
+#     body = json.loads(request.data)
+#     new_subtask = Subtask(
+#         description = body.get("description"),
+#         done = body.get("done"),
+#         task_id = task_id
+#     )
+
+#     db.session.add(new_subtask)
+#     db.session.commit()
+#     return success_response(new_subtask.serialize())
+
+
+
+
 
 
 
