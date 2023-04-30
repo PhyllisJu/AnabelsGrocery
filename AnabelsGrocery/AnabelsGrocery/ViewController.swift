@@ -204,7 +204,7 @@ extension ViewController: UICollectionViewDelegate {
             filterProducts(val: indexPath.item, filterID: currentFilter.id)
         } else {
             // TODO: redirect users to product details page
-            self.navigationController?.pushViewController(DetailsViewController(), animated: true)
+            self.navigationController?.pushViewController(DetailsViewController(product: products[indexPath.section][indexPath.item]), animated: true)
         }
     }
 }
