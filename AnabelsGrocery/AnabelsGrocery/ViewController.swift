@@ -50,7 +50,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Today's Inventory"
+        title = "Inventory"
         view.backgroundColor = .white
         
         let flowLayout = UICollectionViewFlowLayout()

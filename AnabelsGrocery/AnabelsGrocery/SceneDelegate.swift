@@ -10,6 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    var tabBarController: UITabBarController?
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -17,10 +18,38 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        let window = UIWindow(windowScene: windowScene)
-        self.window = window
-        window.rootViewController = UINavigationController(rootViewController: ViewController())
-        window.makeKeyAndVisible()
+
+        // Create the tab bar controller
+        tabBarController = UITabBarController()
+
+        // Create and add child view controllers
+        let inventoryViewController = ViewController()
+        inventoryViewController.title = "Inventory"
+        inventoryViewController.tabBarItem = UITabBarItem(title: "Inventory", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
+        
+        let navigationControllerInventory = UINavigationController(rootViewController: inventoryViewController)
+
+        let menuViewController = MenuViewController()
+        menuViewController.title = "Menu"
+        menuViewController.tabBarItem = UITabBarItem(title: "Menu", image: UIImage(systemName: "list.dash"), selectedImage: UIImage(systemName: "list.dash.circle.fill"))
+        let navigationControllerMenu = UINavigationController(rootViewController: menuViewController)
+
+        let cartViewController = CartViewController()
+        cartViewController.title = "Cart"
+        cartViewController.tabBarItem = UITabBarItem(title: "Cart", image: UIImage(systemName: "cart"), selectedImage: UIImage(systemName: "cart.fill"))
+        let navigationControllerCart = UINavigationController(rootViewController: cartViewController)
+        
+        let reservationViewController = ReservationViewController()
+        reservationViewController.title = "Reservation"
+        reservationViewController.tabBarItem = UITabBarItem(title: "Reservation", image: UIImage(systemName: "checkmark.circle"), selectedImage: UIImage(systemName: "checkmark.circle.fill"))
+        let navigationControllerReservation = UINavigationController(rootViewController: reservationViewController)
+
+        tabBarController?.viewControllers = [navigationControllerInventory, navigationControllerMenu, navigationControllerCart, navigationControllerReservation]
+
+        // Set the tab bar controller as the root view controller for this scene
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = tabBarController
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
