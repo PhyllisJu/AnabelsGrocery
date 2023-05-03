@@ -18,14 +18,20 @@ class DetailsViewController: UIViewController {
     let addToCartButton = UIButton()
     let inventoryLabel = UILabel()
     let messageLabel = UILabel()
-    let product: Product
-    
+    var product: Product
+    var products: [[Product]]
+    var productRow: Int
+    var productCol: Int
     var quantity: Int
     
-    init(product: Product) {
-        self.product = product
+    init(products: [[Product]], row: Int, col: Int) {
+        self.products = products
+        self.product = products[row][col]
+        self.productRow = row
+        self.productCol = col
         self.quantity = 0
         super.init(nibName: nil, bundle: nil)
+        
     }
     
     override func viewDidLoad() {
@@ -97,12 +103,8 @@ class DetailsViewController: UIViewController {
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.numberOfLines = 0
         view.addSubview(messageLabel)
-        
-        
-        
-        
+    
         setupConstraints()
-        // TODO: implement the details page and navigation
     }
     
     @objc func addQuantity() {
@@ -133,6 +135,9 @@ class DetailsViewController: UIViewController {
         }
     
         product.inventory -= quantity
+        product.selectedNum += quantity
+        products[productRow][productCol] = product
+        updateUserDefaults(newProducts: products)
         messageLabel.text = "Successfully added \(quantity) \(product.name) to the shopping cart!"
         messageLabel.textColor = .green
         
@@ -140,6 +145,8 @@ class DetailsViewController: UIViewController {
         quantityLabel.text = "\(quantity)"
         
         inventoryLabel.text = "Currenty in stock: \(product.inventory)"
+        
+        self.navigationController?.pushViewController(CartViewController(), animated: true)
     }
     
     func setupConstraints() {
@@ -208,6 +215,29 @@ class DetailsViewController: UIViewController {
             messageLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
         ])
         
+    }
+    
+    func updateUserDefaults(newProducts: [[Product]]) {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(newProducts)
+            UserDefaults.standard.set(data, forKey: "products")
+        } catch {
+            print("Unable to Encode Note (\(error))")
+        }
+    }
+
+    func getUserDefaults() -> [[Product]] {
+        var products: [[Product]] = [[]]
+        if let data = UserDefaults.standard.data(forKey: "products") {
+            do {
+                let decoder = JSONDecoder()
+                products = try decoder.decode([[Product]].self, from: data)
+            } catch {
+                print("Unable to Decode Notes (\(error))")
+            }
+        }
+        return products
     }
     
     required init?(coder: NSCoder) {

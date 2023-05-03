@@ -28,15 +28,6 @@ class ViewController: UIViewController {
         [Product(image: "sample", name: "Ketchup", category: "Condiments", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Mustard", category: "Condiments", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Hot Sauce", category: "Condiments", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)]
     ]
     
-    private var products: [[Product]] = [
-        [Product(image: "sample", name: "Apples", category: "Produce", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Bananas", category: "Produce", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Oranges", category: "Produce", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)],
-        [Product(image: "sample", name: "Milk", category: "Dairy", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Cheese", category: "Dairy", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Yogurt", category: "Dairy", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Eggs", category: "Dairy", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)],
-        [Product(image: "sample", name: "Chicken", category: "Meat", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Beef", category: "Meat", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)],
-        [Product(image: "sample", name: "Chips", category: "Snacks", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Pretzels", category: "Snacks", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Nuts", category: "Snacks", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)],
-        [Product(image: "sample", name: "Blood Orange Juice", category: "Beverages", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Tangerine Juice", category: "Beverages", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Water", category: "Beverages", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)],
-        [Product(image: "sample", name: "Ketchup", category: "Condiments", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Mustard", category: "Condiments", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Hot Sauce", category: "Condiments", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)]
-    ]
-    
     // constants
     let itemPadding: CGFloat = 10
     let sectionPadding: CGFloat = 5
@@ -52,6 +43,8 @@ class ViewController: UIViewController {
         
         title = "Inventory"
         view.backgroundColor = .white
+        
+        updateUserDefaults(newProducts: initialProducts)
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = itemPadding
@@ -85,7 +78,7 @@ class ViewController: UIViewController {
         
         setUpConstraints()
     }
-
+    
     func setUpConstraints() {
         let collectionViewPadding: CGFloat = 12
         
@@ -103,6 +96,29 @@ class ViewController: UIViewController {
             filterCollectionView.heightAnchor.constraint(equalToConstant: 100)
         ])
     }
+    
+    func updateUserDefaults(newProducts: [[Product]]) {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(newProducts)
+            UserDefaults.standard.set(data, forKey: "products")
+        } catch {
+            print("Unable to Encode Note (\(error))")
+        }
+    }
+
+    func getUserDefaults() -> [[Product]] {
+        var products: [[Product]] = [[]]
+        if let data = UserDefaults.standard.data(forKey: "products") {
+            do {
+                let decoder = JSONDecoder()
+                products = try decoder.decode([[Product]].self, from: data)
+            } catch {
+                print("Unable to Decode Notes (\(error))")
+            }
+        }
+        return products
+    }
 
     // filter algorithm
     func filterProducts(val: Int, filterID: Int) {
@@ -115,15 +131,16 @@ class ViewController: UIViewController {
         }
         selectedFilters.sort()
         if (selectedFilters.count == 0) {
-            products = initialProducts
+            updateUserDefaults(newProducts: initialProducts)
             sections = initialSections
         } else {
-            products = []
+            var products : [[Product]] = []
             sections = []
             for filter in selectedFilters {
                 products.append(initialProducts[filter])
                 sections.append(initialSections[filter])
             }
+            updateUserDefaults(newProducts: products)
         }
         collectionView.reloadData()
     }
@@ -133,6 +150,7 @@ class ViewController: UIViewController {
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if (collectionView.tag == collectionViewTag){
+            let products = getUserDefaults()
             return products[section].count
         }
         return filters.count
@@ -141,6 +159,7 @@ extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if (collectionView.tag == collectionViewTag) {
             if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseID, for: indexPath) as? ProductCollectionViewCell {
+                let products = getUserDefaults()
                 let product = products[indexPath.section][indexPath.item]
                 cell.update(product: product)
                 return cell
@@ -157,6 +176,7 @@ extension ViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         if (collectionView.tag == collectionViewTag) {
+            let products = getUserDefaults()
             return products.count
         }
         return 1
@@ -203,8 +223,9 @@ extension ViewController: UICollectionViewDelegate {
             }
             filterProducts(val: indexPath.item, filterID: currentFilter.id)
         } else {
-            // TODO: redirect users to product details page
-            self.navigationController?.pushViewController(DetailsViewController(product: products[indexPath.section][indexPath.item]), animated: true)
+            // redirect users to product details page
+            let products = getUserDefaults()
+            self.navigationController?.pushViewController(DetailsViewController(products: products, row: indexPath.section, col: indexPath.item), animated: true)
         }
     }
 }
