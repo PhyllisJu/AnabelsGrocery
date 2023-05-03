@@ -146,7 +146,10 @@ class DetailsViewController: UIViewController {
         
         inventoryLabel.text = "Currenty in stock: \(product.inventory)"
         
-        self.navigationController?.pushViewController(CartViewController(), animated: true)
+        let shoppingCartVC = ShoppingCartViewController()
+        shoppingCartVC.addItem(product)
+        navigationController?.pushViewController(shoppingCartVC, animated: true)
+        
     }
     
     func setupConstraints() {
