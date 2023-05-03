@@ -139,9 +139,6 @@ class DetailsViewController: UIViewController {
         
         inventoryLabel.text = "Currenty in stock: \(product.inventory)"
         
-        let shoppingCartVC = ShoppingCartViewController()
-        shoppingCartVC.reload()
-//        navigationController?.pushViewController(shoppingCartVC, animated: true)
         
     }
     

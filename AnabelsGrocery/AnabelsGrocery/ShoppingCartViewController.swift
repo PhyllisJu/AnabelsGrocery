@@ -30,7 +30,15 @@ class ShoppingCartViewController: UIViewController {
         
         view.addSubview(tableView)
         
+        tableView.reloadData()
+        
         setupConstraints()
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
     }
     
     func setupConstraints() {
@@ -43,7 +51,6 @@ class ShoppingCartViewController: UIViewController {
     }
     
     func reload() {
-//        items.append(item)
         tableView.reloadData()
     }
     
