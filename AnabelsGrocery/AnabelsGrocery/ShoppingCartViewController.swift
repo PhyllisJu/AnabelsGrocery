@@ -42,8 +42,8 @@ class ShoppingCartViewController: UIViewController {
         ])
     }
     
-    func addItem(_ item: Product) {
-        items.append(item)
+    func reload() {
+//        items.append(item)
         tableView.reloadData()
     }
     

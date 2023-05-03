@@ -7,13 +7,15 @@
 
 import Foundation
 
-class Menu {
+class Menu : Codable {
     var image: String
+    var name: String
     var description: String
     var ingredients: [Product]
     
-    init(image: String, description: String, ingredients: [Product]) {
+    init(image: String, name: String, description: String, ingredients: [Product]) {
         self.image = image
+        self.name = name
         self.description = description
         self.ingredients = ingredients
     }

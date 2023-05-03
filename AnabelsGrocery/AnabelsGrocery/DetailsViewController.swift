@@ -22,14 +22,12 @@ class DetailsViewController: UIViewController {
     var products: [[Product]]
     var productRow: Int
     var productCol: Int
-    var quantity: Int
     
     init(products: [[Product]], row: Int, col: Int) {
         self.products = products
         self.product = products[row][col]
         self.productRow = row
         self.productCol = col
-        self.quantity = 0
         super.init(nibName: nil, bundle: nil)
         
     }
@@ -80,14 +78,14 @@ class DetailsViewController: UIViewController {
         subtractButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(subtractButton)
         
-        quantityLabel.text = String(quantity)
+        quantityLabel.text = String(product.selectedNum)
         quantityLabel.textAlignment = .center
         quantityLabel.font = .systemFont(ofSize: 20)
         quantityLabel.backgroundColor = .systemGray5
         quantityLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(quantityLabel)
         
-        addToCartButton.setTitle("Add to cart", for: .normal)
+        addToCartButton.setTitle("Confirm", for: .normal)
         addToCartButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 25)
         addToCartButton.setTitleColor(.systemPurple, for: .normal)
         addToCartButton.layer.cornerRadius = 5
@@ -108,9 +106,9 @@ class DetailsViewController: UIViewController {
     }
     
     @objc func addQuantity() {
-        if (quantity < product.inventory) {
-            quantity = quantity + 1
-            quantityLabel.text = "\(String(quantity))"
+        if (product.selectedNum < product.inventory) {
+            product.selectedNum += 1
+            quantityLabel.text = "\(String(product.selectedNum))"
             messageLabel.text = ""
         } else {
             messageLabel.text = "Quantity cannot be more than \(product.inventory)"
@@ -120,35 +118,30 @@ class DetailsViewController: UIViewController {
     }
     
     @objc func subtractQuantity() {
-        if (quantity > 0) {
-            quantity = quantity - 1
+        if (product.selectedNum > 0) {
+            product.selectedNum -= 1
             messageLabel.text = ""
         }
-        quantityLabel.text = "\(String(quantity))"
+        quantityLabel.text = "\(String(product.selectedNum))"
     }
     
     @objc func addToCart() {
-        if (quantity == 0) {
-            messageLabel.text = "Quantity should be at least 1."
-            messageLabel.textColor = .red
-            return
-        }
+//        if (product.selectedNum == 0) {
+//            messageLabel.text = "Quantity should be at least 1."
+//            messageLabel.textColor = .red
+//            return
+//        }
     
-        product.inventory -= quantity
-        product.selectedNum += quantity
         products[productRow][productCol] = product
         updateUserDefaults(newProducts: products)
-        messageLabel.text = "Successfully added \(quantity) \(product.name) to the shopping cart!"
+        messageLabel.text = "Successfully added \(product.selectedNum) \(product.name) to the shopping cart!"
         messageLabel.textColor = .green
-        
-        quantity = 0
-        quantityLabel.text = "\(quantity)"
         
         inventoryLabel.text = "Currenty in stock: \(product.inventory)"
         
         let shoppingCartVC = ShoppingCartViewController()
-        shoppingCartVC.addItem(product)
-        navigationController?.pushViewController(shoppingCartVC, animated: true)
+        shoppingCartVC.reload()
+//        navigationController?.pushViewController(shoppingCartVC, animated: true)
         
     }
     
