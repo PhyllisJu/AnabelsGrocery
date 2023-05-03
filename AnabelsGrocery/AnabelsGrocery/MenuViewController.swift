@@ -8,6 +8,11 @@
 import UIKit
 
 class MenuViewController: UIViewController {
+    
+    var collectionView: UICollectionView!
+    
+    // sample data initialization
+//    private
 
     override func viewDidLoad() {
         super.viewDidLoad()

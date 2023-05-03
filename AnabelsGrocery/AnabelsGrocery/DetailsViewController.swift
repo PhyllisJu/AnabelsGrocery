@@ -126,20 +126,11 @@ class DetailsViewController: UIViewController {
     }
     
     @objc func addToCart() {
-//        if (product.selectedNum == 0) {
-//            messageLabel.text = "Quantity should be at least 1."
-//            messageLabel.textColor = .red
-//            return
-//        }
-    
         products[productRow][productCol] = product
         updateUserDefaults(newProducts: products)
         messageLabel.text = "Successfully added \(product.selectedNum) \(product.name) to the shopping cart!"
         messageLabel.textColor = .green
-        
         inventoryLabel.text = "Currenty in stock: \(product.inventory)"
-        
-        
     }
     
     func setupConstraints() {

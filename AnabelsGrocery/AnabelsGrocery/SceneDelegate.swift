@@ -35,6 +35,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let navigationControllerMenu = UINavigationController(rootViewController: menuViewController)
 
         let cartViewController = ShoppingCartViewController()
+        cartViewController.title = "Cart"
         cartViewController.tabBarItem = UITabBarItem(title: "Cart", image: UIImage(systemName: "cart"), selectedImage: UIImage(systemName: "cart.fill"))
         let navigationControllerCart = UINavigationController(rootViewController: cartViewController)
         

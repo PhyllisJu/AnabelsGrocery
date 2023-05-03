@@ -22,7 +22,7 @@ class ShoppingCartViewController: UIViewController {
         super.viewDidLoad()
         
 
-        title = "Shopping Cart"
+        title = "My Cart"
         view.backgroundColor = .white
         
         tableView.delegate = self
@@ -48,10 +48,6 @@ class ShoppingCartViewController: UIViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-    }
-    
-    func reload() {
-        tableView.reloadData()
     }
     
     func getUserDefaults() -> [[Product]] {
