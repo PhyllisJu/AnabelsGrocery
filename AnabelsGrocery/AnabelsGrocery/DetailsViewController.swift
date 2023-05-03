@@ -49,6 +49,8 @@ class DetailsViewController: UIViewController {
         
         descriptionLabel.text = product.description
         descriptionLabel.font = .systemFont(ofSize: 16)
+        descriptionLabel.lineBreakMode = .byWordWrapping
+        descriptionLabel.numberOfLines = 0
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(descriptionLabel)
         
