@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Product: Codable {
+class Product: Codable, Equatable {
     var image: String
     var name: String
     var category: String
@@ -25,4 +25,8 @@ class Product: Codable {
         self.description = description
         self.selectedNum = selectedNum
     }
+    
+    static func == (lhs: Product, rhs: Product) -> Bool {
+            return lhs.name == rhs.name
+        }
 }

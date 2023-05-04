@@ -104,6 +104,7 @@ extension MenuViewController: UICollectionViewDelegateFlowLayout {
 extension MenuViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // TODO: redirect users to menu details page
+        self.navigationController?.pushViewController(MenuDetailsViewController(menu: menus[indexPath.item]), animated: true)
 //        self.navigationController?.pushViewController(DetailsViewController(menu: menus[indexPath.item]), animated: true)
     }
 }

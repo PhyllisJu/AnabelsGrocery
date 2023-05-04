@@ -32,6 +32,29 @@ class DetailsViewController: UIViewController {
         
     }
     
+    init(product: Product) {
+        var products: [[Product]] = [[]]
+        if let data = UserDefaults.standard.data(forKey: "products") {
+            do {
+                let decoder = JSONDecoder()
+                products = try decoder.decode([[Product]].self, from: data)
+            } catch {
+                print("Unable to Decode Notes (\(error))")
+            }
+        }
+        self.product = product
+        self.products = products
+        
+        let rowIndex = products.firstIndex(where: { $0.contains { $0.name == product.name } })
+        let colIndex = products[rowIndex!].firstIndex(where: { $0.name == product.name })
+        
+
+        self.productRow = rowIndex!
+        self.productCol = colIndex!
+        super.init(nibName: nil, bundle: nil)
+
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -133,6 +156,10 @@ class DetailsViewController: UIViewController {
         messageLabel.text = "Successfully added \(product.selectedNum) \(product.name) to the shopping cart!"
         messageLabel.textColor = .green
         inventoryLabel.text = "Currenty in stock: \(product.inventory)"
+        if let indices = indicesOf(x: product, array: products) {
+            print(indices[0])
+            print(indices[1])
+        }
     }
     
     func setupConstraints() {
@@ -228,6 +255,15 @@ class DetailsViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func indicesOf(x: Product, array: [[Product]]) -> [Int]? {
+        if let rowIndex = array.firstIndex(where: { $0.contains { $0.name == x.name } }),
+           let colIndex = array[rowIndex].firstIndex(where: { $0.name == x.name }) {
+            return [rowIndex, colIndex]
+        } else {
+            return nil
+        }
     }
 }
 
