@@ -1,0 +1,26 @@
+//create a new order
+{
+  "user_name": "user1",
+  "total_price": "test",
+  "valid": "False",
+  "inventories": [
+    {
+      "inventory_id": 1,
+      "num_sel": 3
+    }
+  ]
+}
+// add an new inventory  to order
+{
+  "inventories": [
+    {
+      "inventory_id": 1,
+      "num_sel": 3
+    }
+  }
+  // create a new order (create new list, valid set to False)
+  // update (add or delete) an existing inventory 
+  // add an new inventory 
+  // delete an existing inventory
+  //// ->
+  // 
