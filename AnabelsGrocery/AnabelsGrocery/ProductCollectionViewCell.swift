@@ -18,6 +18,8 @@ class ProductCollectionViewCell: UICollectionViewCell {
         contentView.layer.borderColor = CGColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1)
         contentView.layer.cornerRadius = 10
         
+        productImageView.layer.cornerRadius = 10
+        productImageView.clipsToBounds = true
         productImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(productImageView)
         
@@ -41,9 +43,9 @@ class ProductCollectionViewCell: UICollectionViewCell {
     func setUpConstraints() {
         NSLayoutConstraint.activate([
             productImageView.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor),
-            productImageView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 10),
-            productImageView.widthAnchor.constraint(equalTo: self.contentView.widthAnchor, multiplier: 0.6),
-            productImageView.heightAnchor.constraint(equalTo: productImageView.widthAnchor, multiplier: 1)
+            productImageView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
+            productImageView.widthAnchor.constraint(equalTo: self.contentView.widthAnchor, multiplier: 1),
+            productImageView.heightAnchor.constraint(equalTo: productImageView.widthAnchor, multiplier: 0.7)
         ])
         
         NSLayoutConstraint.activate([
