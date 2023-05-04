@@ -13,6 +13,9 @@ class ReservationViewController: UIViewController {
     let addressLabel = UILabel()
     let hoursLabel = UILabel()
     let priceLabel = UILabel()
+    // TODO: Add a tableview of reserved items
+    // TODO: Add a button for canceling reservation
+    // (TODO: Add a button for completing the order)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,14 +45,19 @@ class ReservationViewController: UIViewController {
         hoursLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hoursLabel)
         
-        totalPrice = UserDefaults.standard.float(forKey: "totalPrice")
+        
         priceLabel.font = .boldSystemFont(ofSize: 25)
         priceLabel.textColor = .black
-        priceLabel.text = "Total Price: " + String(format: "$%.2f", totalPrice)
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(priceLabel)
         
         setupConstraints()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        totalPrice = UserDefaults.standard.float(forKey: "totalPrice")
+        priceLabel.text = "Total Price: " + String(format: "$%.2f", totalPrice)
     }
     
     func setupConstraints() {
