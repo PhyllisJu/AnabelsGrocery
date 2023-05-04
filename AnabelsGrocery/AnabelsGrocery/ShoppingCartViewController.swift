@@ -17,20 +17,25 @@ class ShoppingCartViewController: UIViewController {
         tableView.register(ShoppingCartTableViewCell.self, forCellReuseIdentifier: "CartItemTableViewCell")
         return tableView
     }()
+    
+    let priceLabel = UILabel()
+    let reserveBtn = UIButton()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
+        
         title = "My Cart"
         view.backgroundColor = .white
         
         tableView.delegate = self
         tableView.dataSource = self
-        
         view.addSubview(tableView)
         
-        tableView.reloadData()
+        priceLabel.font = .systemFont(ofSize: 18)
+        priceLabel.textColor = .black
+        priceLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(priceLabel)
         
         setupConstraints()
     }
@@ -38,8 +43,10 @@ class ShoppingCartViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        priceLabel.text = String(format: "$%.2f", calculateTotalPrice())
         tableView.reloadData()
     }
+
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
@@ -48,6 +55,23 @@ class ShoppingCartViewController: UIViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+        
+        NSLayoutConstraint.activate([
+            priceLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+            priceLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10)
+        ])
+    }
+    
+    func calculateTotalPrice() -> Float {
+        let products = getUserDefaults()
+        var totalPrice : Float = 0.0
+        for i in 0..<products.count {
+            for j in 0..<products[i].count {
+                totalPrice += Float(products[i][j].selectedNum) * products[i][j].price
+            }
+        }
+        print(totalPrice)
+        return totalPrice
     }
     
     func getUserDefaults() -> [[Product]] {
@@ -62,8 +86,6 @@ class ShoppingCartViewController: UIViewController {
         }
         return products
     }
-    
-
     
 }
 
