@@ -20,12 +20,12 @@ class ViewController: UIViewController {
     private var sections = ["Produce", "Dairy", "Meat", "Snacks", "Beverages", "Condiments"]
     
     private var initialProducts: [[Product]] = [
-        [Product(image: "sample", name: "Apples", category: "Produce", price: 1.99, inventory: 30, description: "This is a placeholder description. This is a placeholder description. This is a placeholder description. This is a placeholder description. This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Bananas", category: "Produce", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Oranges", category: "Produce", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)],
-        [Product(image: "sample", name: "Milk", category: "Dairy", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Cheese", category: "Dairy", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Yogurt", category: "Dairy", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Eggs", category: "Dairy", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)],
-        [Product(image: "sample", name: "Chicken", category: "Meat", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Beef", category: "Meat", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)],
-        [Product(image: "sample", name: "Chips", category: "Snacks", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Pretzels", category: "Snacks", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Nuts", category: "Snacks", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)],
-        [Product(image: "sample", name: "Blood Orange Juice", category: "Beverages", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Tangerine Juice", category: "Beverages", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Water", category: "Beverages", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)],
-        [Product(image: "sample", name: "Ketchup", category: "Condiments", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Mustard", category: "Condiments", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Hot Sauce", category: "Condiments", price: 1.99, inventory: 30, description: "This is a placeholder description.", selectedNum: 0)]
+        [Product(image: "sample", name: "Apples", category: "Produce", price: 1.99, description: "This is a placeholder description. This is a placeholder description. This is a placeholder description. This is a placeholder description. This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Bananas", category: "Produce", price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Oranges", category: "Produce", price: 1.99, description: "This is a placeholder description.", selectedNum: 0)],
+        [Product(image: "sample", name: "Milk", category: "Dairy", price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Cheese", category: "Dairy", price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Yogurt", category: "Dairy", price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Eggs", category: "Dairy", price: 1.99, description: "This is a placeholder description.", selectedNum: 0)],
+        [Product(image: "sample", name: "Chicken", category: "Meat", price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Beef", category: "Meat", price: 1.99, description: "This is a placeholder description.", selectedNum: 0)],
+        [Product(image: "sample", name: "Chips", category: "Snacks", price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Pretzels", category: "Snacks", price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Nuts", category: "Snacks", price: 1.99, description: "This is a placeholder description.", selectedNum: 0)],
+        [Product(image: "sample", name: "Blood Orange Juice", category: "Beverages", price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Tangerine Juice", category: "Beverages", price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Water", category: "Beverages", price: 1.99, description: "This is a placeholder description.", selectedNum: 0)],
+        [Product(image: "sample", name: "Ketchup", category: "Condiments", price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Mustard", category: "Condiments", price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(image: "sample", name: "Hot Sauce", category: "Condiments", price: 1.99, description: "This is a placeholder description.", selectedNum: 0)]
     ]
     
     // constants
@@ -41,10 +41,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Inventory"
+        title = "Products"
         view.backgroundColor = .white
         
-        updateUserDefaults(newProducts: initialProducts)
+        updateProductsFromUserDefaults(newProducts: initialProducts)
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = itemPadding
@@ -97,7 +97,7 @@ class ViewController: UIViewController {
         ])
     }
     
-    func updateUserDefaults(newProducts: [[Product]]) {
+    func updateProductsFromUserDefaults(newProducts: [[Product]]) {
         do {
             let encoder = JSONEncoder()
             let data = try encoder.encode(newProducts)
@@ -107,7 +107,7 @@ class ViewController: UIViewController {
         }
     }
 
-    func getUserDefaults() -> [[Product]] {
+    func getProductsFromUserDefaults() -> [[Product]] {
         var products: [[Product]] = [[]]
         if let data = UserDefaults.standard.data(forKey: "products") {
             do {
@@ -131,7 +131,7 @@ class ViewController: UIViewController {
         }
         selectedFilters.sort()
         if (selectedFilters.count == 0) {
-            updateUserDefaults(newProducts: initialProducts)
+            updateProductsFromUserDefaults(newProducts: initialProducts)
             sections = initialSections
         } else {
             var products : [[Product]] = []
@@ -140,7 +140,7 @@ class ViewController: UIViewController {
                 products.append(initialProducts[filter])
                 sections.append(initialSections[filter])
             }
-            updateUserDefaults(newProducts: products)
+            updateProductsFromUserDefaults(newProducts: products)
         }
         collectionView.reloadData()
     }
@@ -150,7 +150,7 @@ class ViewController: UIViewController {
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if (collectionView.tag == collectionViewTag){
-            let products = getUserDefaults()
+            let products = getProductsFromUserDefaults()
             return products[section].count
         }
         return filters.count
@@ -159,7 +159,7 @@ extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if (collectionView.tag == collectionViewTag) {
             if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseID, for: indexPath) as? ProductCollectionViewCell {
-                let products = getUserDefaults()
+                let products = getProductsFromUserDefaults()
                 let product = products[indexPath.section][indexPath.item]
                 cell.update(product: product)
                 return cell
@@ -176,7 +176,7 @@ extension ViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         if (collectionView.tag == collectionViewTag) {
-            let products = getUserDefaults()
+            let products = getProductsFromUserDefaults()
             return products.count
         }
         return 1
@@ -224,7 +224,7 @@ extension ViewController: UICollectionViewDelegate {
             filterProducts(val: indexPath.item, filterID: currentFilter.id)
         } else {
             // redirect users to product details page
-            let products = getUserDefaults()
+            let products = getProductsFromUserDefaults()
             self.navigationController?.pushViewController(DetailsViewController(products: products, row: indexPath.section, col: indexPath.item), animated: true)
         }
     }

@@ -9,24 +9,24 @@ import UIKit
 
 class ShoppingCartViewController: UIViewController {
     
-    var items = [Product]()
-    
+    var totalPrice : Float = 0.0
     let tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(ShoppingCartTableViewCell.self, forCellReuseIdentifier: "CartItemTableViewCell")
         return tableView
     }()
-    
     let priceLabel = UILabel()
     let reserveBtn = UIButton()
+    let stackView = UIStackView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         title = "My Cart"
         view.backgroundColor = .white
+        
+        UserDefaults.standard.set(totalPrice, forKey: "totalPrice")
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -35,7 +35,30 @@ class ShoppingCartViewController: UIViewController {
         priceLabel.font = .systemFont(ofSize: 18)
         priceLabel.textColor = .black
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(priceLabel)
+        
+        reserveBtn.setTitle("Reserve", for: .normal)
+        reserveBtn.backgroundColor = .systemBlue
+        reserveBtn.layer.cornerRadius = 10.0
+        reserveBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+        reserveBtn.setTitleColor(.white, for: .normal)
+        reserveBtn.setContentHuggingPriority(.required, for: .horizontal)
+        reserveBtn.addTarget(self, action: #selector(onReserve), for: .touchUpInside)
+        reserveBtn.translatesAutoresizingMaskIntoConstraints = false
+        
+        let spacerView = UIView()
+        spacerView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        spacerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        stackView.addArrangedSubview(spacerView)
+        stackView.addArrangedSubview(priceLabel)
+        stackView.addArrangedSubview(reserveBtn)
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        stackView.spacing = 10
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(stackView)
         
         setupConstraints()
     }
@@ -43,38 +66,68 @@ class ShoppingCartViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        priceLabel.text = String(format: "$%.2f", calculateTotalPrice())
+        calculateTotalPrice()
         tableView.reloadData()
     }
 
     
     func setupConstraints() {
+        let padding = 16.0
+        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.bottomAnchor.constraint(equalTo: stackView.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
         
         NSLayoutConstraint.activate([
-            priceLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-            priceLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10)
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
+            stackView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: padding),
+            stackView.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
-    func calculateTotalPrice() -> Float {
-        let products = getUserDefaults()
-        var totalPrice : Float = 0.0
+    @objc func onReserve() {
+        // update total price in user defaults
+        UserDefaults.standard.set(totalPrice, forKey: "totalPrice")
+        
+        // reset totalPrice value and products in user defaults
+        totalPrice = 0.0
+        let products = getProductsFromUserDefaults()
+        for i in 0..<products.count {
+            for j in 0..<products[i].count {
+                products[i][j].selectedNum = 0
+            }
+        }
+        updateProductsFromUserDefaults(newProducts: products)
+        
+        // navigate to the reservation page
+        self.navigationController?.pushViewController(ReservationViewController(), animated: true)
+    }
+    
+    // helper functions
+    func calculateTotalPrice() {
+        let products = getProductsFromUserDefaults()
+        totalPrice = 0.0
         for i in 0..<products.count {
             for j in 0..<products[i].count {
                 totalPrice += Float(products[i][j].selectedNum) * products[i][j].price
             }
         }
-        print(totalPrice)
-        return totalPrice
+        if (totalPrice == 0.0) {
+            reserveBtn.isEnabled = false
+            reserveBtn.backgroundColor = .systemGray
+        } else {
+            reserveBtn.isEnabled = true
+            reserveBtn.backgroundColor = .systemBlue
+        }
+        priceLabel.text = "Total: " + String(format: "$%.2f", totalPrice)
     }
     
-    func getUserDefaults() -> [[Product]] {
+    func getProductsFromUserDefaults() -> [[Product]] {
         var products: [[Product]] = [[]]
         if let data = UserDefaults.standard.data(forKey: "products") {
             do {
@@ -87,22 +140,32 @@ class ShoppingCartViewController: UIViewController {
         return products
     }
     
+    func updateProductsFromUserDefaults(newProducts: [[Product]]) {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(newProducts)
+            UserDefaults.standard.set(data, forKey: "products")
+        } catch {
+            print("Unable to Encode Note (\(error))")
+        }
+    }
+    
 }
 
 extension ShoppingCartViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        let products = getUserDefaults()
+        let products = getProductsFromUserDefaults()
         return products.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let products = getUserDefaults()
+        let products = getProductsFromUserDefaults()
         return products[section].filter { $0.selectedNum > 0 }.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CartItemTableViewCell", for: indexPath) as! ShoppingCartTableViewCell
-        let products = getUserDefaults()
+        let products = getProductsFromUserDefaults()
         let filteredItems = products[indexPath.section].filter { $0.selectedNum > 0 }
         let item = filteredItems[indexPath.row]
         cell.configure(with: item)

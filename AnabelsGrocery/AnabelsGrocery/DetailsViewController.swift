@@ -16,7 +16,7 @@ class DetailsViewController: UIViewController {
     let subtractButton = UIButton()
     let quantityLabel = UILabel()
     let addToCartButton = UIButton()
-    let inventoryLabel = UILabel()
+//    let inventoryLabel = UILabel()
     let messageLabel = UILabel()
     var product: Product
     var products: [[Product]]
@@ -82,10 +82,10 @@ class DetailsViewController: UIViewController {
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(priceLabel)
         
-        inventoryLabel.text = "Currenty in stock: \(product.inventory)"
-        inventoryLabel.font = .systemFont(ofSize: 16)
-        inventoryLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(inventoryLabel)
+//        inventoryLabel.text = "Currenty in stock: \(product.inventory)"
+//        inventoryLabel.font = .systemFont(ofSize: 16)
+//        inventoryLabel.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(inventoryLabel)
         
         addButton.setTitle("+", for: .normal)
         addButton.titleLabel?.font = .systemFont(ofSize: 35)
@@ -131,12 +131,12 @@ class DetailsViewController: UIViewController {
     }
     
     @objc func addQuantity() {
-        if (product.selectedNum < product.inventory) {
+        if (product.selectedNum < 30) {
             product.selectedNum += 1
             quantityLabel.text = "\(String(product.selectedNum))"
             messageLabel.text = ""
         } else {
-            messageLabel.text = "Quantity cannot be more than \(product.inventory)"
+            messageLabel.text = "Quantity is too large."
             messageLabel.textColor = .red
         }
 
@@ -152,10 +152,10 @@ class DetailsViewController: UIViewController {
     
     @objc func addToCart() {
         products[productRow][productCol] = product
-        updateUserDefaults(newProducts: products)
+        updateProductsFromUserDefaults(newProducts: products)
         messageLabel.text = "Successfully added \(product.selectedNum) \(product.name) to the shopping cart!"
         messageLabel.textColor = .green
-        inventoryLabel.text = "Currenty in stock: \(product.inventory)"
+//        inventoryLabel.text = "Currenty in stock: \(product.inventory)"
         if let indices = indicesOf(x: product, array: products) {
             print(indices[0])
             print(indices[1])
@@ -186,13 +186,13 @@ class DetailsViewController: UIViewController {
             priceLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
         ])
         
-        NSLayoutConstraint.activate([
-            inventoryLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 5),
-            inventoryLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
-        ])
+//        NSLayoutConstraint.activate([
+//            inventoryLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 5),
+//            inventoryLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
+//        ])
         
         NSLayoutConstraint.activate([
-            subtractButton.topAnchor.constraint(equalTo: inventoryLabel.bottomAnchor, constant: 20),
+            subtractButton.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 20),
             subtractButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
             subtractButton.widthAnchor.constraint(equalToConstant: 40),
             subtractButton.heightAnchor.constraint(equalToConstant: 40),
@@ -208,7 +208,7 @@ class DetailsViewController: UIViewController {
         ])
         
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: inventoryLabel.bottomAnchor, constant: 20),
+            addButton.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 20),
             addButton.leftAnchor.constraint(equalTo: quantityLabel.leftAnchor, constant: 40),
             addButton.widthAnchor.constraint(equalToConstant: 40),
             addButton.heightAnchor.constraint(equalToConstant: 40),
@@ -230,7 +230,7 @@ class DetailsViewController: UIViewController {
         
     }
     
-    func updateUserDefaults(newProducts: [[Product]]) {
+    func updateProductsFromUserDefaults(newProducts: [[Product]]) {
         do {
             let encoder = JSONEncoder()
             let data = try encoder.encode(newProducts)
@@ -238,19 +238,6 @@ class DetailsViewController: UIViewController {
         } catch {
             print("Unable to Encode Note (\(error))")
         }
-    }
-
-    func getUserDefaults() -> [[Product]] {
-        var products: [[Product]] = [[]]
-        if let data = UserDefaults.standard.data(forKey: "products") {
-            do {
-                let decoder = JSONDecoder()
-                products = try decoder.decode([[Product]].self, from: data)
-            } catch {
-                print("Unable to Decode Notes (\(error))")
-            }
-        }
-        return products
     }
     
     required init?(coder: NSCoder) {

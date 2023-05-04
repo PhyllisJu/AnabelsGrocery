@@ -22,19 +22,19 @@ class MenuViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        title = "Menu"
+        title = "Recipes"
         view.backgroundColor = .white
         
         // sample data initialization
-        products = getUserDefaults()
+        products = getProductsFromUserDefaults()
         menus = [
-            Menu(image: "sample", name: "Menu 1", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]]),
-            Menu(image: "sample", name: "Menu 2 Long Long Name", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][2], products[1][0]]),
-            Menu(image: "sample", name: "Menu 3", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][0], products[2][1], products[3][2], products[4][0], products[5][0], products[5][2]]),
-            Menu(image: "sample", name: "Menu 4", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]]),
-            Menu(image: "sample", name: "Menu 5", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][2], products[1][0]]),
-            Menu(image: "sample", name: "Menu 6", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][0], products[2][1], products[3][2], products[4][0], products[5][0], products[5][2]]),
-            Menu(image: "sample", name: "Menu 7", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]])
+            Menu(image: "sample", name: "Recipe 1", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]]),
+            Menu(image: "sample", name: "Recipe 2 Long Long Name", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][2], products[1][0]]),
+            Menu(image: "sample", name: "Recipe 3", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][0], products[2][1], products[3][2], products[4][0], products[5][0], products[5][2]]),
+            Menu(image: "sample", name: "Recipe 4", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]]),
+            Menu(image: "sample", name: "Recipe 5", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][2], products[1][0]]),
+            Menu(image: "sample", name: "Recipe 6", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][0], products[2][1], products[3][2], products[4][0], products[5][0], products[5][2]]),
+            Menu(image: "sample", name: "Recipe 7", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]])
         ]
         
         let flowLayout = UICollectionViewFlowLayout()
@@ -65,7 +65,7 @@ class MenuViewController: UIViewController {
     }
     
     
-    func getUserDefaults() -> [[Product]] {
+    func getProductsFromUserDefaults() -> [[Product]] {
         var products: [[Product]] = [[]]
         if let data = UserDefaults.standard.data(forKey: "products") {
             do {

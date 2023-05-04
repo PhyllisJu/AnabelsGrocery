@@ -24,14 +24,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Create and add child view controllers
         let inventoryViewController = ViewController()
-        inventoryViewController.title = "Inventory"
-        inventoryViewController.tabBarItem = UITabBarItem(title: "Inventory", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
+        inventoryViewController.title = "Products"
+        inventoryViewController.tabBarItem = UITabBarItem(title: "Products", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
         
         let navigationControllerInventory = UINavigationController(rootViewController: inventoryViewController)
 
         let menuViewController = MenuViewController()
-        menuViewController.title = "Menu"
-        menuViewController.tabBarItem = UITabBarItem(title: "Menu", image: UIImage(systemName: "list.dash"), selectedImage: UIImage(systemName: "list.dash.circle.fill"))
+        menuViewController.title = "Recipes"
+        menuViewController.tabBarItem = UITabBarItem(title: "Recipes", image: UIImage(systemName: "list.dash"), selectedImage: UIImage(systemName: "list.dash.circle.fill"))
         let navigationControllerMenu = UINavigationController(rootViewController: menuViewController)
 
         let cartViewController = ShoppingCartViewController()
