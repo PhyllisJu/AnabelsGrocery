@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 class NetworkManager {
 
@@ -32,37 +33,35 @@ class NetworkManager {
         task.resume()
 
     }
-
-//    func createMenu(body: String, sender: String, completion: @escaping (Menu) -> Void) {
-//        var request = URLRequest(url: url)
-//        request.httpMethod = "POST"
-//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//
-//        let body: [String: Any] = [
-//            "message": body,
-//            "sender": sender
-//        ]
-//
-//        request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: .fragmentsAllowed)
-//
-//        let task = URLSession.shared.dataTask(with: request) { data, response, err in
-//            if let data = data {
-//                do {
-//                    let decoder = JSONDecoder()
-//                    let response = try decoder.decode(Message.self, from: data)
-//                    completion(response)
-//                }
-//                catch (let error) {
-//                    print(error.localizedDescription)
-//                }
-//
-//            }
-//        }
-//
-//        task.resume()
-//
-//
-//    }
+    
+    func createMenu(name: String, image: UIImage, description: String, completion: @escaping (Menu) -> Void) {
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        let boundary = UUID().uuidString
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        let imageData = image.pngData()!
+        let body: [String: Any] = [
+            "name": name,
+            "description": description,
+            "image_data": imageData,
+            "inventories": [],
+            "instruction": ""
+        ]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: .fragmentsAllowed)
+        let task = URLSession.shared.dataTask(with: request) { data, response, err in
+            if let data = data {
+                do {
+                    let decoder = JSONDecoder()
+                    let response = try decoder.decode(Menu.self, from: data)
+                    completion(response)
+                }
+                catch (let error) {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+        task.resume()
+    }
     
     func createOrder(total_price: Float, inventories: [[String:Int]], completion: @escaping (Order) -> Void) {
         let orderPostURL = URL(string: "http://127.0.0.1:8002/orders/")!
@@ -90,10 +89,6 @@ class NetworkManager {
     
                 }
             }
-    
             task.resume()
-    
-    
         }
-
 }
