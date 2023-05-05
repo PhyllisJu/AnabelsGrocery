@@ -44,7 +44,7 @@ class ViewController: UIViewController {
         title = "Products"
         view.backgroundColor = .white
         
-        updateProductsFromUserDefaults(newProducts: initialProducts)
+        Utilities.updateProductsFromUserDefaults(newProducts: initialProducts)
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = itemPadding
@@ -96,29 +96,6 @@ class ViewController: UIViewController {
             filterCollectionView.heightAnchor.constraint(equalToConstant: 100)
         ])
     }
-    
-    func updateProductsFromUserDefaults(newProducts: [[Product]]) {
-        do {
-            let encoder = JSONEncoder()
-            let data = try encoder.encode(newProducts)
-            UserDefaults.standard.set(data, forKey: "products")
-        } catch {
-            print("Unable to Encode Note (\(error))")
-        }
-    }
-
-    func getProductsFromUserDefaults() -> [[Product]] {
-        var products: [[Product]] = [[]]
-        if let data = UserDefaults.standard.data(forKey: "products") {
-            do {
-                let decoder = JSONDecoder()
-                products = try decoder.decode([[Product]].self, from: data)
-            } catch {
-                print("Unable to Decode Notes (\(error))")
-            }
-        }
-        return products
-    }
 
     // filter algorithm
     func filterProducts(val: Int, filterID: Int) {
@@ -131,7 +108,7 @@ class ViewController: UIViewController {
         }
         selectedFilters.sort()
         if (selectedFilters.count == 0) {
-            updateProductsFromUserDefaults(newProducts: initialProducts)
+            Utilities.updateProductsFromUserDefaults(newProducts: initialProducts)
             sections = initialSections
         } else {
             var products : [[Product]] = []
@@ -140,7 +117,7 @@ class ViewController: UIViewController {
                 products.append(initialProducts[filter])
                 sections.append(initialSections[filter])
             }
-            updateProductsFromUserDefaults(newProducts: products)
+            Utilities.updateProductsFromUserDefaults(newProducts: products)
         }
         collectionView.reloadData()
     }
@@ -150,7 +127,7 @@ class ViewController: UIViewController {
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if (collectionView.tag == collectionViewTag){
-            let products = getProductsFromUserDefaults()
+            let products = Utilities.getProductsFromUserDefaults()
             return products[section].count
         }
         return filters.count
@@ -159,7 +136,7 @@ extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if (collectionView.tag == collectionViewTag) {
             if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseID, for: indexPath) as? ProductCollectionViewCell {
-                let products = getProductsFromUserDefaults()
+                let products = Utilities.getProductsFromUserDefaults()
                 let product = products[indexPath.section][indexPath.item]
                 cell.update(product: product)
                 return cell
@@ -176,7 +153,7 @@ extension ViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         if (collectionView.tag == collectionViewTag) {
-            let products = getProductsFromUserDefaults()
+            let products = Utilities.getProductsFromUserDefaults()
             return products.count
         }
         return 1
@@ -224,7 +201,7 @@ extension ViewController: UICollectionViewDelegate {
             filterProducts(val: indexPath.item, filterID: currentFilter.id)
         } else {
             // redirect users to product details page
-            let products = getProductsFromUserDefaults()
+            let products = Utilities.getProductsFromUserDefaults()
             self.navigationController?.pushViewController(DetailsViewController(products: products, row: indexPath.section, col: indexPath.item), animated: true)
         }
     }

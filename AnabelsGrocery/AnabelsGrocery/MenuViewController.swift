@@ -26,7 +26,7 @@ class MenuViewController: UIViewController {
         view.backgroundColor = .white
         
         // sample data initialization
-        products = getProductsFromUserDefaults()
+        products = Utilities.getProductsFromUserDefaults()
         menus = [
             Menu(image: "sample", name: "Recipe 1", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]]),
             Menu(image: "sample", name: "Recipe 2 Long Long Name", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][2], products[1][0]]),
@@ -62,20 +62,6 @@ class MenuViewController: UIViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -collectionViewPadding),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -collectionViewPadding),
         ])
-    }
-    
-    
-    func getProductsFromUserDefaults() -> [[Product]] {
-        var products: [[Product]] = [[]]
-        if let data = UserDefaults.standard.data(forKey: "products") {
-            do {
-                let decoder = JSONDecoder()
-                products = try decoder.decode([[Product]].self, from: data)
-            } catch {
-                print("Unable to Decode Notes (\(error))")
-            }
-        }
-        return products
     }
 }
 

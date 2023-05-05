@@ -84,7 +84,7 @@ class DetailsViewController: UIViewController {
         addButton.setTitle("+", for: .normal)
         addButton.titleLabel?.font = .systemFont(ofSize: 30)
         addButton.setTitleColor(.white, for: .normal)
-        addButton.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
+        addButton.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
         addButton.layer.cornerRadius = 5.0
         addButton.addTarget(self, action: #selector(addQuantity), for: .touchUpInside)
         addButton.translatesAutoresizingMaskIntoConstraints = false
@@ -93,7 +93,7 @@ class DetailsViewController: UIViewController {
         subtractButton.setTitle("-", for: .normal)
         subtractButton.titleLabel?.font = .systemFont(ofSize: 35)
         subtractButton.setTitleColor(.white, for: .normal)
-        subtractButton.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
+        subtractButton.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
         subtractButton.layer.cornerRadius = 5.0
         subtractButton.addTarget(self, action: #selector(subtractQuantity), for: .touchUpInside)
         subtractButton.translatesAutoresizingMaskIntoConstraints = false
@@ -108,7 +108,7 @@ class DetailsViewController: UIViewController {
         
         addToCartButton.setTitle("Confirm", for: .normal)
         addToCartButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-        addToCartButton.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
+        addToCartButton.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
         addToCartButton.layer.cornerRadius = 10.0
         addToCartButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         addToCartButton.addTarget(self, action: #selector(addToCart), for: .touchUpInside)
@@ -131,7 +131,7 @@ class DetailsViewController: UIViewController {
             quantityLabel.text = "\(String(product.selectedNum))"
             messageLabel.text = ""
             addToCartButton.isEnabled = true
-            addToCartButton.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
+            addToCartButton.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
         } else {
             messageLabel.text = "Quantity is too large."
             messageLabel.textColor = .red
@@ -146,16 +146,16 @@ class DetailsViewController: UIViewController {
             product.selectedNum -= 1
             messageLabel.text = ""
             addToCartButton.isEnabled = true
-            addToCartButton.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
+            addToCartButton.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
         }
         quantityLabel.text = "\(String(product.selectedNum))"
     }
     
     @objc func addToCart() {
         products[productRow][productCol] = product
-        updateProductsFromUserDefaults(newProducts: products)
+        Utilities.updateProductsFromUserDefaults(newProducts: products)
         messageLabel.text = "Successfully added to the shopping cart!"
-        messageLabel.textColor = hexStringToUIColor(hex: "#2C3684")
+        messageLabel.textColor = Utilities.hexStringToUIColor(hex: "#2C3684")
         if let indices = indicesOf(x: product, array: products) {
             print(indices[0])
             print(indices[1])
@@ -229,16 +229,6 @@ class DetailsViewController: UIViewController {
         
     }
     
-    // helper functions
-    func updateProductsFromUserDefaults(newProducts: [[Product]]) {
-        do {
-            let encoder = JSONEncoder()
-            let data = try encoder.encode(newProducts)
-            UserDefaults.standard.set(data, forKey: "products")
-        } catch {
-            print("Unable to Encode Note (\(error))")
-        }
-    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -251,28 +241,6 @@ class DetailsViewController: UIViewController {
         } else {
             return nil
         }
-    }
-    
-    func hexStringToUIColor(hex: String, alpha: CGFloat = 1.0) -> UIColor {
-        var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-
-        if (cString.hasPrefix("#")) {
-            cString.remove(at: cString.startIndex)
-        }
-
-        if ((cString.count) != 6) {
-            return UIColor.gray
-        }
-
-        var rgbValue: UInt64 = 0
-        Scanner(string: cString).scanHexInt64(&rgbValue)
-
-        return UIColor(
-            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-            alpha: alpha
-        )
     }
 }
 
