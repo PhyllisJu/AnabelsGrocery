@@ -12,6 +12,7 @@ class MenuViewController: UIViewController {
     var collectionView: UICollectionView!
     var products: [[Product]] = []
     private var menus: [Menu] = []
+    let addButton = UIButton()
     
     // constants
     let itemPadding: CGFloat = 10
@@ -50,17 +51,37 @@ class MenuViewController: UIViewController {
         collectionView.delegate = self
         view.addSubview(collectionView)
         
+        addButton.frame = CGRect(x: 0, y: 0, width: 60, height: 60)
+        addButton.backgroundColor = .white
+        addButton.layer.cornerRadius = addButton.bounds.width / 2
+        addButton.setImage(UIImage(named: "add"), for: .normal)
+        addButton.addTarget(self, action: #selector(onAddButton), for: .touchUpInside)
+        addButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(addButton)
+        
         setUpConstraints()
     }
     
+    @objc func onAddButton() {
+        // navigate to create menu page
+        self.navigationController?.pushViewController(CreateMenuViewController(), animated: true)
+    }
+    
     func setUpConstraints() {
-        let collectionViewPadding: CGFloat = 12
+        let padding: CGFloat = 16.0
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: collectionViewPadding),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: collectionViewPadding),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -collectionViewPadding),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -collectionViewPadding),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+        ])
+        
+        NSLayoutConstraint.activate([
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            addButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
+            addButton.widthAnchor.constraint(equalToConstant: 60),
+            addButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
 }
