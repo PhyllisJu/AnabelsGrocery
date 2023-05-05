@@ -95,13 +95,17 @@ class ShoppingCartViewController: UIViewController {
         
         // reset totalPrice value and products in user defaults
         totalPrice = 0.0
+<<<<<<< HEAD
+        let products = Utilities.getProductsFromUserDefaults()
+=======
         var products = getProductsFromUserDefaults()
+>>>>>>> fe19e3786c152e9980056b475c7ee8f7f5f32570
         for i in 0..<products.count {
             for j in 0..<products[i].count {
                 products[i][j].selectedNum = 0
             }
         }
-        updateProductsFromUserDefaults(newProducts: products)
+        Utilities.updateProductsFromUserDefaults(newProducts: products)
         
         // navigate to the reservation page
         self.navigationController?.pushViewController(ReservationViewController(), animated: true)
@@ -109,7 +113,7 @@ class ShoppingCartViewController: UIViewController {
     
     // helper functions
     func calculateTotalPrice() {
-        let products = getProductsFromUserDefaults()
+        let products = Utilities.getProductsFromUserDefaults()
         totalPrice = 0.0
         for i in 0..<products.count {
             for j in 0..<products[i].count {
@@ -121,72 +125,26 @@ class ShoppingCartViewController: UIViewController {
             reserveBtn.backgroundColor = .systemGray
         } else {
             reserveBtn.isEnabled = true
-            reserveBtn.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
+            reserveBtn.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
         }
         priceLabel.text = "Total: " + String(format: "$%.2f", totalPrice)
     }
-    
-    func getProductsFromUserDefaults() -> [[Product]] {
-        var products: [[Product]] = [[]]
-        if let data = UserDefaults.standard.data(forKey: "products") {
-            do {
-                let decoder = JSONDecoder()
-                products = try decoder.decode([[Product]].self, from: data)
-            } catch {
-                print("Unable to Decode Notes (\(error))")
-            }
-        }
-        return products
-    }
-    
-    func updateProductsFromUserDefaults(newProducts: [[Product]]) {
-        do {
-            let encoder = JSONEncoder()
-            let data = try encoder.encode(newProducts)
-            UserDefaults.standard.set(data, forKey: "products")
-        } catch {
-            print("Unable to Encode Note (\(error))")
-        }
-    }
-
-    func hexStringToUIColor(hex: String, alpha: CGFloat = 1.0) -> UIColor {
-        var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-
-        if (cString.hasPrefix("#")) {
-            cString.remove(at: cString.startIndex)
-        }
-
-        if ((cString.count) != 6) {
-            return UIColor.gray
-        }
-
-        var rgbValue: UInt64 = 0
-        Scanner(string: cString).scanHexInt64(&rgbValue)
-
-        return UIColor(
-            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-            alpha: alpha
-        )
-    }
-    
 }
 
 extension ShoppingCartViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        let products = getProductsFromUserDefaults()
+        let products = Utilities.getProductsFromUserDefaults()
         return products.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let products = getProductsFromUserDefaults()
+        let products = Utilities.getProductsFromUserDefaults()
         return products[section].filter { $0.selectedNum > 0 }.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CartItemTableViewCell", for: indexPath) as! ShoppingCartTableViewCell
-        let products = getProductsFromUserDefaults()
+        let products = Utilities.getProductsFromUserDefaults()
         let filteredItems = products[indexPath.section].filter { $0.selectedNum > 0 }
         let item = filteredItems[indexPath.row]
         cell.configure(with: item)

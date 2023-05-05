@@ -22,8 +22,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Create the tab bar controller
         tabBarController = UITabBarController()
 //        tabBarController?.tabBar.barTintColor = hexStringToUIColor(hex: "#2C3684")
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: hexStringToUIColor(hex: "#2C3684")], for: .selected)
-        tabBarController?.tabBar.selectedImageTintColor = hexStringToUIColor(hex: "#2C3684")
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: Utilities.hexStringToUIColor(hex: "#2C3684")], for: .selected)
+        tabBarController?.tabBar.selectedImageTintColor = Utilities.hexStringToUIColor(hex: "#2C3684")
 
         // Create and add child view controllers
         let inventoryViewController = ViewController()
@@ -55,29 +55,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.makeKeyAndVisible()
     }
     
-    // helper function
-    func hexStringToUIColor(hex: String, alpha: CGFloat = 1.0) -> UIColor {
-        var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-
-        if (cString.hasPrefix("#")) {
-            cString.remove(at: cString.startIndex)
-        }
-
-        if ((cString.count) != 6) {
-            return UIColor.gray
-        }
-
-        var rgbValue: UInt64 = 0
-        Scanner(string: cString).scanHexInt64(&rgbValue)
-
-        return UIColor(
-            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-            alpha: alpha
-        )
-    }
-
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.

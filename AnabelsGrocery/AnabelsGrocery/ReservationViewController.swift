@@ -65,7 +65,6 @@ class ReservationViewController: UIViewController {
         
         stackView.addArrangedSubview(spacerView)
         stackView.addArrangedSubview(cancelBtn)
-//        stackView.backgroundColor = .systemGray6
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.distribution = .fill
@@ -115,14 +114,12 @@ class ReservationViewController: UIViewController {
             priceLabel.topAnchor.constraint(equalTo: hoursLabel.bottomAnchor, constant: padding),
             priceLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             priceLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-//            hoursLabel.bottomAnchor.constraint(equalTo: tableView.topAnchor, constant: -padding)
         ])
         
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
-//            stackView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: padding),
             stackView.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
