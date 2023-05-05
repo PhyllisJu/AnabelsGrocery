@@ -7,6 +7,8 @@ from db import Category
 from db import Menu
 from db import Order
 from db import Orderitem
+from db import Asset
+
 import os
 import datetime
 
@@ -52,10 +54,21 @@ def get_inventories():
     """
     inventories = []
     for inventory in Inventory.query.all():  
-        inventories.append(inventory.serialize()) 
+        inventories.append(inventory.serialize_for_render()) 
 
     return success_response({"inventories": inventories})
 
+
+@app.route("/test/inventories/")
+def test_get_inventories():
+    """
+    Endpoint for getting all inventories
+    """
+    inventories = []
+    for inventory in Inventory.query.all():  
+        inventories.append(inventory.serialize_all()) 
+
+    return success_response({"inventories": inventories})
 
 
 @app.route("/inventories/", methods=["POST"])
@@ -73,7 +86,7 @@ def create_inventory():
 
     db.session.add(new_inventory)
     db.session.commit()
-    return success_response(new_inventory.serialize(), 201)
+    return success_response(new_inventory.serialize_all(), 201)
 
 
 @app.route("/inventories/<int:inventory_id>/")
@@ -84,7 +97,7 @@ def get_task(inventory_id):
     inventory = Inventory.query.filter_by(id = inventory_id).first()
     if inventory is None:
         return failure_response(f"Task not found {inventory_id}!")
-    return success_response(inventory.serialize())
+    return success_response(inventory.serialize_all())
 
 
 # -- CATEGORY ROUTES---------------------------------------------------
@@ -153,6 +166,10 @@ def get_categories():
       
     return success_response({"categories": response })
 
+
+def update_categories():
+    pass
+
 # -- MENU ROUTES---------------------------------------------------
 
 @app.route("/menus/", methods=["GET"])
@@ -171,11 +188,20 @@ def create_menu():
     Endpoint for creating a new menu
     """
     body = json.loads(request.data)  
+
+    image_data = body.get("image_data")
+    if image_data is None:
+        return failure_response("Not Base64 URL")
+    
+    image = Asset(image_data=image_data)
+    db.session.add(image)
+    db.session.commit()
+    
     new_menu= Menu(
         name = body.get("name"),
-        image = body.get("image"),  #TODO
         description = body.get("description"), 
-        instruction = body.get("instruction")
+        instruction = body.get("instruction"),
+        image_id = image.id
     )
 
     db.session.add(new_menu)
