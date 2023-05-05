@@ -118,6 +118,20 @@ class CreateMenuViewController: UIViewController, UIImagePickerControllerDelegat
         if let pickedImage = info[.originalImage] as? UIImage {
             imageView.image = pickedImage
             // TODO: Handle image upload here
+            
+//            // Convert the UIImage to Data
+//            let data = pickedImage.pngData()!
+//            
+//            UserDefaults.standard.set(data, forKey: "savedImage")
+//            
+//            
+//            // URL
+//            let url = URL(string: "url")
+//            
+//            // Get the data from that URL
+//            let imageData = try? Data(contentsOf: url)
+//            
+//            let UIImage = UIImage(data: imageData)
         }
         dismiss(animated: true)
     }
