@@ -11,6 +11,7 @@ class ViewController: UIViewController {
     
     var collectionView: UICollectionView!
     var filterCollectionView: UICollectionView!
+    let refreshControl = UIRefreshControl()
     
     // sample data initialization
     private var filters: [Filter] = [Filter(name: "Produce", selected: false, id: 0), Filter(name: "Dairy", selected: false, id: 1), Filter(name: "Meat", selected: false, id: 2), Filter(name: "Snacks", selected: false, id: 3), Filter(name: "Beverages", selected: false, id: 4), Filter(name: "Condiments", selected: false, id: 5)]
@@ -37,9 +38,17 @@ class ViewController: UIViewController {
     let filterReuseID = "filterReuseID"
     let collectionViewTag = 0
     let filterCollectionViewTag = 1
+    
+    let dummyData: [Product] = []
+    var shownDummyData: [Product] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        var url = URL(string: "http://127.0.0.1:8002")!
+        let formatParameter = URLQueryItem(name: "format", value: "json")
+        url.append(queryItems: [formatParameter])
+        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         
         title = "Products"
         view.backgroundColor = .white
@@ -58,6 +67,11 @@ class ViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.tag = collectionViewTag
+        if #available(iOS 10.0, *) {
+            collectionView.refreshControl = refreshControl
+        } else {
+            collectionView.addSubview(refreshControl)
+        }
         view.addSubview(collectionView)
         
         collectionView.register(ProductCollectionViewHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerReuseID)
@@ -77,6 +91,29 @@ class ViewController: UIViewController {
         view.addSubview(filterCollectionView)
         
         setUpConstraints()
+    }
+    
+    func createDummyData() {
+        
+        NetworkManager.shared.getAllProducts { products in
+            DispatchQueue.main.async {
+                self.shownDummyData = products
+                self.collectionView.reloadData()
+            }
+        }
+        
+    }
+    
+        
+    @objc func refreshData() {
+        NetworkManager.shared.getAllProducts { products in
+            DispatchQueue.main.async {
+                self.shownDummyData = products
+                self.collectionView.reloadData()
+                self.refreshControl.endRefreshing()
+            }
+        }
+        
     }
     
     func setUpConstraints() {
