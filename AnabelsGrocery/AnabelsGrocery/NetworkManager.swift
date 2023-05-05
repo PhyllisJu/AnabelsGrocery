@@ -63,5 +63,37 @@ class NetworkManager {
 //
 //
 //    }
+    
+    func createOrder(total_price: Float, inventories: [[String:Int]], completion: @escaping (Order) -> Void) {
+        let orderPostURL = URL(string: "http://127.0.0.1:8002/orders/")!
+            var request = URLRequest(url: orderPostURL)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    
+            let body: [String: Any] = [
+                "total_price": total_price,
+                "inventories": inventories
+            ]
+    
+            request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: .fragmentsAllowed)
+    
+            let task = URLSession.shared.dataTask(with: request) { data, response, err in
+                if let data = data {
+                    do {
+                        let decoder = JSONDecoder()
+                        let response = try decoder.decode(Order.self, from: data)
+                        completion(response)
+                    }
+                    catch (let error) {
+                        print(error.localizedDescription)
+                    }
+    
+                }
+            }
+    
+            task.resume()
+    
+    
+        }
 
 }

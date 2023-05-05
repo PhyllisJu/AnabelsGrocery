@@ -19,6 +19,8 @@ class ShoppingCartViewController: UIViewController {
     let priceLabel = UILabel()
     let reserveBtn = UIButton()
     let stackView = UIStackView()
+    
+    var orderContent = [[String:Int]]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,18 +95,30 @@ class ShoppingCartViewController: UIViewController {
         // update total price in user defaults
         UserDefaults.standard.set(totalPrice, forKey: "totalPrice")
         
-        // reset totalPrice value and products in user defaults
-        totalPrice = 0.0
+
 
         var products = Utilities.getProductsFromUserDefaults()
 
-
+        // create order
         for i in 0..<products.count {
             for j in 0..<products[i].count {
+                if products[i][j].selectedNum > 0 {
+                    orderContent.append([
+                        "inventory_id": products[i][j].id,
+                        "num_sel" :products[i][j].selectedNum
+                    ])
+                }
                 products[i][j].selectedNum = 0
             }
         }
+        NetworkManager.shared.createOrder(total_price: totalPrice, inventories: orderContent) { order in
+            print("success")
+        }
+        
         Utilities.updateProductsFromUserDefaults(newProducts: products)
+        
+        // reset totalPrice value and products in user defaults
+        totalPrice = 0.0
         
         // navigate to the reservation page
         self.navigationController?.pushViewController(ReservationViewController(), animated: true)
@@ -148,5 +162,12 @@ extension ShoppingCartViewController: UITableViewDelegate, UITableViewDataSource
         let item = filteredItems[indexPath.row]
         cell.configure(with: item)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let products = Utilities.getProductsFromUserDefaults()
+        let filteredItems = products[indexPath.section].filter { $0.selectedNum > 0 }
+        let item = filteredItems[indexPath.row]
+        self.navigationController?.pushViewController(DetailsViewController(product: item), animated: true)
     }
 }

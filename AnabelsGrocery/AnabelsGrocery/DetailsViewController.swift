@@ -99,7 +99,7 @@ class DetailsViewController: UIViewController {
         subtractButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(subtractButton)
         
-        quantityLabel.text = String(product.selectedNum)
+//        quantityLabel.text = String(product.selectedNum)
         quantityLabel.textAlignment = .center
         quantityLabel.font = .systemFont(ofSize: 20)
         quantityLabel.backgroundColor = .clear
@@ -123,6 +123,11 @@ class DetailsViewController: UIViewController {
         view.addSubview(messageLabel)
     
         setupConstraints()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        quantityLabel.text = String(product.selectedNum)
     }
     
     @objc func addQuantity() {
