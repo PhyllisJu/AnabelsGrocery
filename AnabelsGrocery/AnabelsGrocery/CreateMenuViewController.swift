@@ -161,6 +161,8 @@ class CreateMenuViewController: UIViewController, UIImagePickerControllerDelegat
            let imageInput = imageView.image {
             NetworkManager.shared.createMenu(name: nameInput, image: imageInput, description: descriptionInput) { name in
                 print("success")
+                // exit the create menu page
+                self.navigationController?.popViewController(animated: true)
             }
         }
         
