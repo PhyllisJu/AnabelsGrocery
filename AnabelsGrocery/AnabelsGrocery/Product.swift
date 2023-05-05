@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Product: Codable, Equatable {
+struct Product: Codable, Equatable {
     var image: String
     var name: String
     var category: String
@@ -27,4 +27,8 @@ class Product: Codable, Equatable {
     static func == (lhs: Product, rhs: Product) -> Bool {
             return lhs.name == rhs.name
         }
+}
+
+struct ProductResponse: Codable {
+    var products: [Product]
 }

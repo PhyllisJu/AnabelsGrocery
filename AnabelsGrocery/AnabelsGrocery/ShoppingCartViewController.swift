@@ -95,7 +95,11 @@ class ShoppingCartViewController: UIViewController {
         
         // reset totalPrice value and products in user defaults
         totalPrice = 0.0
+<<<<<<< HEAD
         let products = Utilities.getProductsFromUserDefaults()
+=======
+        var products = getProductsFromUserDefaults()
+>>>>>>> fe19e3786c152e9980056b475c7ee8f7f5f32570
         for i in 0..<products.count {
             for j in 0..<products[i].count {
                 products[i][j].selectedNum = 0
