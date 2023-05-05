@@ -66,7 +66,7 @@ class DetailsViewController: UIViewController {
         view.addSubview(picImageView)
         
         nameLabel.text = product.name
-        nameLabel.font = .systemFont(ofSize: 20)
+        nameLabel.font = .boldSystemFont(ofSize: 30)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
         
@@ -82,15 +82,11 @@ class DetailsViewController: UIViewController {
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(priceLabel)
         
-//        inventoryLabel.text = "Currenty in stock: \(product.inventory)"
-//        inventoryLabel.font = .systemFont(ofSize: 16)
-//        inventoryLabel.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(inventoryLabel)
-        
         addButton.setTitle("+", for: .normal)
-        addButton.titleLabel?.font = .systemFont(ofSize: 35)
+        addButton.titleLabel?.font = .systemFont(ofSize: 30)
         addButton.setTitleColor(.white, for: .normal)
-        addButton.backgroundColor = .systemPurple
+        addButton.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
+        addButton.layer.cornerRadius = 5.0
         addButton.addTarget(self, action: #selector(addQuantity), for: .touchUpInside)
         addButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addButton)
@@ -98,7 +94,8 @@ class DetailsViewController: UIViewController {
         subtractButton.setTitle("-", for: .normal)
         subtractButton.titleLabel?.font = .systemFont(ofSize: 35)
         subtractButton.setTitleColor(.white, for: .normal)
-        subtractButton.backgroundColor = .systemPurple
+        subtractButton.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
+        subtractButton.layer.cornerRadius = 5.0
         subtractButton.addTarget(self, action: #selector(subtractQuantity), for: .touchUpInside)
         subtractButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(subtractButton)
@@ -106,22 +103,21 @@ class DetailsViewController: UIViewController {
         quantityLabel.text = String(product.selectedNum)
         quantityLabel.textAlignment = .center
         quantityLabel.font = .systemFont(ofSize: 20)
-        quantityLabel.backgroundColor = .systemGray5
+        quantityLabel.backgroundColor = .clear
         quantityLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(quantityLabel)
         
         addToCartButton.setTitle("Confirm", for: .normal)
         addToCartButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 25)
-        addToCartButton.setTitleColor(.systemPurple, for: .normal)
-        addToCartButton.layer.cornerRadius = 5
-        addToCartButton.layer.borderWidth = 2
-        addToCartButton.layer.borderColor = UIColor.purple.cgColor
+        addToCartButton.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
+        addToCartButton.layer.cornerRadius = 10.0
+        addToCartButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         addToCartButton.addTarget(self, action: #selector(addToCart), for: .touchUpInside)
         addToCartButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addToCartButton)
         
         messageLabel.text = ""
-        messageLabel.font = UIFont.boldSystemFont(ofSize: 20)
+        messageLabel.font = UIFont.boldSystemFont(ofSize: 15)
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.numberOfLines = 0
@@ -153,9 +149,8 @@ class DetailsViewController: UIViewController {
     @objc func addToCart() {
         products[productRow][productCol] = product
         updateProductsFromUserDefaults(newProducts: products)
-        messageLabel.text = "Successfully added \(product.selectedNum) \(product.name) to the shopping cart!"
+        messageLabel.text = "Successfully added to the shopping cart!"
         messageLabel.textColor = .green
-//        inventoryLabel.text = "Currenty in stock: \(product.inventory)"
         if let indices = indicesOf(x: product, array: products) {
             print(indices[0])
             print(indices[1])
@@ -163,73 +158,71 @@ class DetailsViewController: UIViewController {
     }
     
     func setupConstraints() {
+        let padding = 16.0
+        
         NSLayoutConstraint.activate([
             picImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            picImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            picImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            picImageView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
+            picImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
+            picImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
+            picImageView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9)
         ])
         
         NSLayoutConstraint.activate([
-            nameLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: 40),
-            nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
+            nameLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: padding),
+            nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
         ])
         
         NSLayoutConstraint.activate([
-            descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
+            priceLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: padding),
+            priceLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+        ])
+        
+        NSLayoutConstraint.activate([
+            descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: padding),
             descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
+            descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9)
         ])
         
         NSLayoutConstraint.activate([
-            priceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20),
-            priceLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
-        ])
-        
-//        NSLayoutConstraint.activate([
-//            inventoryLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 5),
-//            inventoryLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
-//        ])
-        
-        NSLayoutConstraint.activate([
-            subtractButton.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 20),
-            subtractButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
-            subtractButton.widthAnchor.constraint(equalToConstant: 40),
-            subtractButton.heightAnchor.constraint(equalToConstant: 40),
+            subtractButton.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: padding),
+            subtractButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            subtractButton.widthAnchor.constraint(equalToConstant: 35),
+            subtractButton.heightAnchor.constraint(equalToConstant: 35),
 
         ])
         
         NSLayoutConstraint.activate([
             quantityLabel.centerYAnchor.constraint(equalTo: subtractButton.centerYAnchor),
-            quantityLabel.leftAnchor.constraint(equalTo: subtractButton.rightAnchor, constant: 3),
-            quantityLabel.rightAnchor.constraint(equalTo: addButton.leftAnchor, constant: -3),
+            quantityLabel.leadingAnchor.constraint(equalTo: subtractButton.trailingAnchor, constant: 3),
+            quantityLabel.trailingAnchor.constraint(equalTo: addButton.leadingAnchor, constant: -3),
             quantityLabel.topAnchor.constraint(equalTo: subtractButton.topAnchor, constant: 1),
             quantityLabel.bottomAnchor.constraint(equalTo: subtractButton.bottomAnchor, constant: -1),
         ])
         
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 20),
-            addButton.leftAnchor.constraint(equalTo: quantityLabel.leftAnchor, constant: 40),
-            addButton.widthAnchor.constraint(equalToConstant: 40),
-            addButton.heightAnchor.constraint(equalToConstant: 40),
+            addButton.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20),
+            addButton.leadingAnchor.constraint(equalTo: quantityLabel.leadingAnchor, constant: 40),
+            addButton.widthAnchor.constraint(equalToConstant: 35),
+            addButton.heightAnchor.constraint(equalToConstant: 35),
         ])
         
         NSLayoutConstraint.activate([
             addToCartButton.centerYAnchor.constraint(equalTo: addButton.centerYAnchor),
-            addToCartButton.leftAnchor.constraint(equalTo: addButton.leftAnchor, constant: 80),
+            addToCartButton.leadingAnchor.constraint(equalTo: addButton.leadingAnchor, constant: 80),
             addToCartButton.widthAnchor.constraint(equalToConstant: 140),
             addToCartButton.heightAnchor.constraint(equalToConstant: 50),
         ])
         
         NSLayoutConstraint.activate([
             messageLabel.topAnchor.constraint(equalTo: subtractButton.bottomAnchor, constant: 20),
-            messageLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
-            messageLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 40),
+            messageLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            messageLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             messageLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
         ])
         
     }
     
+    // helper functions
     func updateProductsFromUserDefaults(newProducts: [[Product]]) {
         do {
             let encoder = JSONEncoder()
@@ -251,6 +244,28 @@ class DetailsViewController: UIViewController {
         } else {
             return nil
         }
+    }
+    
+    func hexStringToUIColor(hex: String, alpha: CGFloat = 1.0) -> UIColor {
+        var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+
+        if (cString.hasPrefix("#")) {
+            cString.remove(at: cString.startIndex)
+        }
+
+        if ((cString.count) != 6) {
+            return UIColor.gray
+        }
+
+        var rgbValue: UInt64 = 0
+        Scanner(string: cString).scanHexInt64(&rgbValue)
+
+        return UIColor(
+            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+            alpha: alpha
+        )
     }
 }
 

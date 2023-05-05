@@ -13,9 +13,9 @@ class ReservationViewController: UIViewController {
     let addressLabel = UILabel()
     let hoursLabel = UILabel()
     let priceLabel = UILabel()
+    let cancelBtn = UIButton()
+    let stackView = UIStackView()
     // TODO: Add a tableview of reserved items
-    // TODO: Add a button for canceling reservation
-    // (TODO: Add a button for completing the order)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,11 +45,34 @@ class ReservationViewController: UIViewController {
         hoursLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hoursLabel)
         
-        
         priceLabel.font = .boldSystemFont(ofSize: 25)
         priceLabel.textColor = .black
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(priceLabel)
+        
+        cancelBtn.setTitle("Cancel Reservation", for: .normal)
+        cancelBtn.backgroundColor = .systemRed
+        cancelBtn.layer.cornerRadius = 10.0
+        cancelBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+        cancelBtn.setTitleColor(.white, for: .normal)
+        cancelBtn.setContentHuggingPriority(.required, for: .horizontal)
+        cancelBtn.addTarget(self, action: #selector(onCancel), for: .touchUpInside)
+        cancelBtn.translatesAutoresizingMaskIntoConstraints = false
+        
+        let spacerView = UIView()
+        spacerView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        spacerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        stackView.addArrangedSubview(spacerView)
+        stackView.addArrangedSubview(cancelBtn)
+//        stackView.backgroundColor = .systemGray6
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        stackView.spacing = 10
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(stackView)
         
         setupConstraints()
     }
@@ -58,6 +81,10 @@ class ReservationViewController: UIViewController {
         super.viewWillAppear(animated)
         totalPrice = UserDefaults.standard.float(forKey: "totalPrice")
         priceLabel.text = "Total Price: " + String(format: "$%.2f", totalPrice)
+    }
+    
+    @objc func onCancel() {
+        // TODO: delete request
     }
     
     func setupConstraints() {
@@ -90,5 +117,14 @@ class ReservationViewController: UIViewController {
             priceLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
 //            hoursLabel.bottomAnchor.constraint(equalTo: tableView.topAnchor, constant: -padding)
         ])
+        
+        NSLayoutConstraint.activate([
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
+//            stackView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: padding),
+            stackView.heightAnchor.constraint(equalToConstant: 60)
+        ])
     }
+
 }

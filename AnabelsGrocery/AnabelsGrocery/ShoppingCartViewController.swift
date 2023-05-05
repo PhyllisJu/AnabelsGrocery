@@ -32,12 +32,11 @@ class ShoppingCartViewController: UIViewController {
         tableView.dataSource = self
         view.addSubview(tableView)
         
-        priceLabel.font = .systemFont(ofSize: 18)
+        priceLabel.font = .boldSystemFont(ofSize: 18)
         priceLabel.textColor = .black
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         
         reserveBtn.setTitle("Reserve", for: .normal)
-        reserveBtn.backgroundColor = .systemBlue
         reserveBtn.layer.cornerRadius = 10.0
         reserveBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         reserveBtn.setTitleColor(.white, for: .normal)
@@ -86,7 +85,7 @@ class ShoppingCartViewController: UIViewController {
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
             stackView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: padding),
-            stackView.heightAnchor.constraint(equalToConstant: 50)
+            stackView.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
@@ -122,7 +121,7 @@ class ShoppingCartViewController: UIViewController {
             reserveBtn.backgroundColor = .systemGray
         } else {
             reserveBtn.isEnabled = true
-            reserveBtn.backgroundColor = .systemBlue
+            reserveBtn.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
         }
         priceLabel.text = "Total: " + String(format: "$%.2f", totalPrice)
     }
@@ -148,6 +147,28 @@ class ShoppingCartViewController: UIViewController {
         } catch {
             print("Unable to Encode Note (\(error))")
         }
+    }
+
+    func hexStringToUIColor(hex: String, alpha: CGFloat = 1.0) -> UIColor {
+        var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+
+        if (cString.hasPrefix("#")) {
+            cString.remove(at: cString.startIndex)
+        }
+
+        if ((cString.count) != 6) {
+            return UIColor.gray
+        }
+
+        var rgbValue: UInt64 = 0
+        Scanner(string: cString).scanHexInt64(&rgbValue)
+
+        return UIColor(
+            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+            alpha: alpha
+        )
     }
     
 }
