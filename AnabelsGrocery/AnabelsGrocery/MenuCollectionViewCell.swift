@@ -52,7 +52,7 @@ class MenuCollectionViewCell: UICollectionViewCell {
     }
     
     func update(menu: Menu) {
-        menuImageView.image = UIImage(named: menu.image)
+        menuImageView.image = UIImage(named: menu.image.url)
         nameLabel.text = menu.name
     }
 }

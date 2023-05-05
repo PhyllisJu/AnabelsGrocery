@@ -125,6 +125,18 @@ class ShoppingCartViewController: UIViewController {
     }
     
     // helper functions
+    func allSelectedNumZero() -> Bool{
+        let products = Utilities.getProductsFromUserDefaults()
+        for i in 0..<products.count {
+            for j in 0..<products[i].count {
+                if products[i][j].selectedNum > 0 {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+    
     func calculateTotalPrice() {
         let products = Utilities.getProductsFromUserDefaults()
         totalPrice = 0.0
@@ -140,6 +152,10 @@ class ShoppingCartViewController: UIViewController {
             reserveBtn.isEnabled = true
             reserveBtn.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
         }
+        if allSelectedNumZero() {
+            totalPrice = 0
+            UserDefaults.standard.set(totalPrice, forKey: "totalPrice")
+        }
         priceLabel.text = "Total: " + String(format: "$%.2f", totalPrice)
     }
 }
@@ -147,6 +163,9 @@ class ShoppingCartViewController: UIViewController {
 extension ShoppingCartViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         let products = Utilities.getProductsFromUserDefaults()
+        if allSelectedNumZero() {
+            return 0
+        }
         return products.count
     }
     

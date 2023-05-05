@@ -55,8 +55,6 @@ class ViewController: UIViewController {
         
         title = "Products"
         view.backgroundColor = .white
-                
-        Utilities.updateProductsFromUserDefaults(newProducts: initialProducts)
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = itemPadding
@@ -130,7 +128,11 @@ class ViewController: UIViewController {
                 for p in self.shownDummyData {
                     self.shownProducts[p.category-1].append(p)
                 }
-                print(self.shownProducts)
+                for i in 0..<self.shownProducts.count {
+                    for j in 0..<self.shownProducts[i].count {
+                        self.shownProducts[i][j].selectedNum = 0
+                    }
+                }
                 Utilities.updateProductsFromUserDefaults(newProducts: self.shownProducts)
                 self.collectionView.reloadData()
             }

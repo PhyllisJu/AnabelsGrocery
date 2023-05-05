@@ -40,7 +40,7 @@ class MenuDetailsViewController: UIViewController {
         contentView.frame = CGRect(x: 0, y: 0, width: scrollView.contentSize.width, height: scrollView.contentSize.height)
         scrollView.addSubview(contentView)
         
-        picImageView.image = UIImage(named: menu.image)
+        picImageView.image = UIImage(named: menu.image.url)
         picImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(picImageView)
         

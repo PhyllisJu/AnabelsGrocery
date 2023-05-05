@@ -10,6 +10,7 @@ import UIKit
 class MenuViewController: UIViewController {
     
     var collectionView: UICollectionView!
+    let refreshControl = UIRefreshControl()
     var products: [[Product]] = []
     private var menus: [Menu] = []
     let addButton = UIButton()
@@ -21,6 +22,9 @@ class MenuViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        
 
         // Do any additional setup after loading the view.
         title = "Recipes"
@@ -28,15 +32,17 @@ class MenuViewController: UIViewController {
         
         // sample data initialization
         products = Utilities.getProductsFromUserDefaults()
-        menus = [
-            Menu(id: 1, image: "sample", name: "Recipe 1", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: [products[0][1], products[1][1], products[2][0]]),
-            Menu(id: 2, image: "sample", name: "Recipe 2 Long Long Name", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: [products[0][2], products[1][0]]),
-            Menu(id: 3, image: "sample", name: "Recipe 3", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: [products[0][0], products[2][1], products[3][2], products[4][0], products[5][0], products[5][2]]),
-            Menu(id: 4, image: "sample", name: "Recipe 4", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: [products[0][1], products[1][1], products[2][0]]),
-            Menu(id: 5, image: "sample", name: "Recipe 5", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: [products[0][2], products[1][0]]),
-            Menu(id: 6, image: "sample", name: "Recipe 6", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: [products[0][0], products[2][1], products[3][2], products[4][0], products[5][0], products[5][2]]),
-            Menu(id: 7, image: "sample", name: "Recipe 7", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: [products[0][1], products[1][1], products[2][0]])
-        ]
+//        menus = [
+//            Menu(id: 1, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 1", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
+//            Menu(id: 2, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 2 Long Long Name", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
+//            Menu(id: 3, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 3", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
+//            Menu(id: 4, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 4", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
+//            Menu(id: 5, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 5", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
+//            Menu(id: 6, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 6", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
+//            Menu(id: 7, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 7", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: [])
+//        ]
+        
+        
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumInteritemSpacing = itemPadding
@@ -49,6 +55,11 @@ class MenuViewController: UIViewController {
         collectionView.register(MenuCollectionViewCell.self, forCellWithReuseIdentifier: cellReuseID)
         collectionView.dataSource = self
         collectionView.delegate = self
+        if #available(iOS 10.0, *) {
+            collectionView.refreshControl = refreshControl
+        } else {
+            collectionView.addSubview(refreshControl)
+        }
         view.addSubview(collectionView)
         
         addButton.frame = CGRect(x: 0, y: 0, width: 60, height: 60)
@@ -59,7 +70,29 @@ class MenuViewController: UIViewController {
         addButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addButton)
         
+        createMenus()
         setUpConstraints()
+    }
+    
+    func createMenus() {
+        
+        NetworkManager.shared.getAllMenus { menus in
+            DispatchQueue.main.async {
+                self.menus = menus
+                self.collectionView.reloadData()
+            }
+        }
+    }
+    
+    @objc func refreshData() {
+        NetworkManager.shared.getAllMenus { menus in
+            DispatchQueue.main.async {
+                self.menus = menus
+                self.collectionView.reloadData()
+                self.refreshControl.endRefreshing()
+            }
+        }
+        
     }
     
     @objc func onAddButton() {
