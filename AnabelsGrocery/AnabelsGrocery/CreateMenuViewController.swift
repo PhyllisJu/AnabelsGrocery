@@ -117,10 +117,8 @@ class CreateMenuViewController: UIViewController, UIImagePickerControllerDelegat
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let pickedImage = info[.originalImage] as? UIImage {
             imageView.image = pickedImage
-            // TODO: Handle image upload here
             
-//            // Convert the UIImage to Data
-//            let data = pickedImage.pngData()!
+
 //            
 //            UserDefaults.standard.set(data, forKey: "savedImage")
 //            
@@ -157,7 +155,15 @@ class CreateMenuViewController: UIViewController, UIImagePickerControllerDelegat
             imageWarningLabel.textColor = .clear
         }
         
-        // TODO: make a post request to add this menu
+        // make a post request to add this menu
+        if let nameInput = nameTextField.text,
+           let descriptionInput = descriptionTextView.text,
+           let imageInput = imageView.image {
+            NetworkManager.shared.createMenu(name: nameInput, image: imageInput, description: descriptionInput) { name in
+                print("success")
+            }
+        }
+        
     }
     
     func setupConstraints() {
