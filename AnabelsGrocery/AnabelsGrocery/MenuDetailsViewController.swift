@@ -12,12 +12,14 @@ class MenuDetailsViewController: UIViewController {
     let menu: Menu
     let picImageView = UIImageView()
     let nameLabel = UILabel()
-    let descriptionLabel = UILabel()
+    let descriptionTextView = UITextView()
+    
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
     
     init(menu: Menu) {
         self.menu = menu
         super.init(nibName: nil, bundle: nil)
-        
     }
     
     required init?(coder: NSCoder) {
@@ -30,44 +32,68 @@ class MenuDetailsViewController: UIViewController {
         title = menu.name
         view.backgroundColor = .white
         
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.contentSize = contentView.bounds.size
+        view.addSubview(scrollView)
+        
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.frame = CGRect(x: 0, y: 0, width: scrollView.contentSize.width, height: scrollView.contentSize.height)
+        scrollView.addSubview(contentView)
+        
         picImageView.image = UIImage(named: menu.image)
         picImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(picImageView)
+        contentView.addSubview(picImageView)
         
         nameLabel.text = menu.name
-        nameLabel.font = .systemFont(ofSize: 20)
+        nameLabel.font = .boldSystemFont(ofSize: 30)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(nameLabel)
+        contentView.addSubview(nameLabel)
         
-        descriptionLabel.text = menu.description
-        descriptionLabel.font = .systemFont(ofSize: 16)
-        descriptionLabel.lineBreakMode = .byWordWrapping
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(descriptionLabel)
+        descriptionTextView.text = menu.description
+        descriptionTextView.font = .systemFont(ofSize: 16)
+        descriptionTextView.isEditable = false
+        descriptionTextView.isScrollEnabled = false // so that descriptionTextView will have a fixed height
+        descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(descriptionTextView)
         
         setupConstraints()
-
-        // Do any additional setup after loading the view.
     }
     
     func setupConstraints() {
+        let padding = 16.0
+        
         NSLayoutConstraint.activate([
-            picImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            picImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            picImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            picImageView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
         NSLayoutConstraint.activate([
-            nameLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: 40),
-            nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
         
         NSLayoutConstraint.activate([
-            descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
-            descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
+            picImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            picImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
+            picImageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
+            picImageView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9)
+        ])
+        
+        NSLayoutConstraint.activate([
+            nameLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: padding),
+            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+        ])
+        
+        NSLayoutConstraint.activate([
+            descriptionTextView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: padding),
+            descriptionTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            descriptionTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            descriptionTextView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
         ])
         
     }
