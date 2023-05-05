@@ -11,7 +11,7 @@ class NetworkManager {
 
     static let shared = NetworkManager()
 
-    var url = URL(string: "http://34.85.172.228/messages/")!
+    var url = URL(string: "http://127.0.0.1:8002/inventories/")!
 
     func getAllProducts(completion: @escaping ([Product]) -> Void) {
         var request = URLRequest(url: url)
@@ -22,7 +22,7 @@ class NetworkManager {
                 do {
                     let decoder = JSONDecoder()
                     let response = try decoder.decode(ProductResponse.self, from: data)
-                    completion(response.products)
+                    completion(response.inventories)
                 }
                 catch (let error) {
                     print(error.localizedDescription)

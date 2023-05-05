@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     private var filters: [Filter] = [Filter(name: "Produce", selected: false, id: 0), Filter(name: "Dairy", selected: false, id: 1), Filter(name: "Meat", selected: false, id: 2), Filter(name: "Snacks", selected: false, id: 3), Filter(name: "Beverages", selected: false, id: 4), Filter(name: "Condiments", selected: false, id: 5)]
     private var selectedFilters: [Int] = [] // selected filter ids
     
-    private var initialSections = ["Produce", "Dairy", "Meat", "Snacks", "Beverages", "Condiments"]
+    private let initialSections = ["Produce", "Dairy", "Meat", "Snacks", "Beverages", "Condiments"]
     private var sections = ["Produce", "Dairy", "Meat", "Snacks", "Beverages", "Condiments"]
     
     private var initialProducts: [[Product]] = [
@@ -29,6 +29,8 @@ class ViewController: UIViewController {
         [Product(id: 16, image: "sample", name: "Ketchup", category: 6, price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(id: 17, image: "sample", name: "Mustard", category: 6, price: 1.99, description: "This is a placeholder description.", selectedNum: 0), Product(id: 18, image: "sample", name: "Hot Sauce", category: 6, price: 1.99, description: "This is a placeholder description.", selectedNum: 0)]
     ]
     
+    private var shownProducts: [[Product]] = [[]]
+    
     // constants
     let itemPadding: CGFloat = 10
     let sectionPadding: CGFloat = 5
@@ -38,21 +40,22 @@ class ViewController: UIViewController {
     let filterReuseID = "filterReuseID"
     let collectionViewTag = 0
     let filterCollectionViewTag = 1
+    var test = 3
     
-    let dummyData: [Product] = []
+    var dummyData: [Product] = []
     var shownDummyData: [Product] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
                 
-        var url = URL(string: "http://127.0.0.1:8002")!
+        var url = URL(string: "http://127.0.0.1:8002/inventories/")!
         let formatParameter = URLQueryItem(name: "format", value: "json")
         url.append(queryItems: [formatParameter])
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         
         title = "Products"
         view.backgroundColor = .white
-        
+                
         Utilities.updateProductsFromUserDefaults(newProducts: initialProducts)
         
         let flowLayout = UICollectionViewFlowLayout()
@@ -90,19 +93,47 @@ class ViewController: UIViewController {
         filterCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: filterReuseID)
         view.addSubview(filterCollectionView)
         
-        setUpConstraints()
         createDummyData()
+        setUpConstraints()
+        
+        
+
     }
     
+    //func createDummyData() -> [[Product]] {
+//    func createDummyData() -> [[Product]]{
+//
+//        NetworkManager.shared.getAllProducts { products in
+//            DispatchQueue.main.async {
+//                self.shownDummyData = products
+//                self.collectionView.reloadData()
+//                var result = [[Product]]()
+//                for i in 0..<self.initialSections.count {
+//                    result.append([])
+//                }
+//                for p in self.shownDummyData {
+//                    result[p.category-1].append(p)
+//                }
+//                return result
+//            }
+//        }
+//    }
     func createDummyData() {
         
         NetworkManager.shared.getAllProducts { products in
             DispatchQueue.main.async {
                 self.shownDummyData = products
+                for _ in 0..<self.initialSections.count-1 {
+                    self.shownProducts.append([])
+                }
+                for p in self.shownDummyData {
+                    self.shownProducts[p.category-1].append(p)
+                }
+                print(self.shownProducts)
+                Utilities.updateProductsFromUserDefaults(newProducts: self.shownProducts)
                 self.collectionView.reloadData()
             }
         }
-        
     }
     
         
@@ -133,6 +164,7 @@ class ViewController: UIViewController {
             filterCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -collectionViewPadding),
             filterCollectionView.heightAnchor.constraint(equalToConstant: 100)
         ])
+        
     }
 
     // filter algorithm
@@ -200,6 +232,7 @@ extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if (collectionView.tag == collectionViewTag) {
             if let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerReuseID, for: indexPath) as? ProductCollectionViewHeader {
+                print(indexPath.section)
                 header.configure(section: sections[indexPath.section])
                 return header
             }
@@ -237,7 +270,7 @@ extension ViewController: UICollectionViewDelegate {
                 cell.configure(filterName: currentFilter.name, isSelected: currentFilter.selected)
             }
             filterProducts(val: indexPath.item, filterID: currentFilter.id)
-            print(shownDummyData.count)
+            print(self.test)
         } else {
             // redirect users to product details page
             let products = Utilities.getProductsFromUserDefaults()

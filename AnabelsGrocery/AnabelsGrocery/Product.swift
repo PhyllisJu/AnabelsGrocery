@@ -32,5 +32,5 @@ struct Product: Codable, Equatable {
 }
 
 struct ProductResponse: Codable {
-    var products: [Product]
+    var inventories: [Product]
 }
