@@ -17,6 +17,7 @@
 		729E78062A01BBAB002C7147 /* ReservationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 729E78052A01BBAB002C7147 /* ReservationViewController.swift */; };
 		729E78142A033429002C7147 /* MenuCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 729E78132A033429002C7147 /* MenuCollectionViewCell.swift */; };
 		729E78162A04A2E9002C7147 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 729E78152A04A2E9002C7147 /* Utilities.swift */; };
+		729E78182A04B1F9002C7147 /* CreateMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 729E78172A04B1F9002C7147 /* CreateMenuViewController.swift */; };
 		72E3363B29FCAB320076C9AC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E3363A29FCAB320076C9AC /* AppDelegate.swift */; };
 		72E3363D29FCAB320076C9AC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E3363C29FCAB320076C9AC /* SceneDelegate.swift */; };
 		72E3363F29FCAB320076C9AC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E3363E29FCAB320076C9AC /* ViewController.swift */; };
@@ -42,6 +43,7 @@
 		729E78052A01BBAB002C7147 /* ReservationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReservationViewController.swift; sourceTree = "<group>"; };
 		729E78132A033429002C7147 /* MenuCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCollectionViewCell.swift; sourceTree = "<group>"; };
 		729E78152A04A2E9002C7147 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		729E78172A04B1F9002C7147 /* CreateMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateMenuViewController.swift; sourceTree = "<group>"; };
 		72E3363729FCAB320076C9AC /* AnabelsGrocery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AnabelsGrocery.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		72E3363A29FCAB320076C9AC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		72E3363C29FCAB320076C9AC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -109,11 +111,9 @@
 				4D7162A52A0327A200F7FF94 /* MenuDetailsViewController.swift */,
 				729E78132A033429002C7147 /* MenuCollectionViewCell.swift */,
 				4D7162A92A03423300F7FF94 /* MenuTableViewCell.swift */,
-
 				729E78152A04A2E9002C7147 /* Utilities.swift */,
-
 				4D7162AD2A04A01700F7FF94 /* NetworkManager.swift */,
- fe19e3786c152e9980056b475c7ee8f7f5f32570
+				729E78172A04B1F9002C7147 /* CreateMenuViewController.swift */,
 			);
 			path = AnabelsGrocery;
 			sourceTree = "<group>";
@@ -206,6 +206,7 @@
 				4D7162A02A02997D00F7FF94 /* ShoppingCartViewController.swift in Sources */,
 				72E3365729FCC0AF0076C9AC /* FilterCollectionViewCell.swift in Sources */,
 				4D7162A62A0327A200F7FF94 /* MenuDetailsViewController.swift in Sources */,
+				729E78182A04B1F9002C7147 /* CreateMenuViewController.swift in Sources */,
 				72E3363D29FCAB320076C9AC /* SceneDelegate.swift in Sources */,
 				729E78062A01BBAB002C7147 /* ReservationViewController.swift in Sources */,
 			);
