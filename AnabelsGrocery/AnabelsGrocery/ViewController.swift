@@ -91,6 +91,7 @@ class ViewController: UIViewController {
         filterCollectionView.dataSource = self
         filterCollectionView.tag = filterCollectionViewTag
         filterCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: filterReuseID)
+        filterCollectionView.showsHorizontalScrollIndicator = false
         view.addSubview(filterCollectionView)
         
         createDummyData()
@@ -247,8 +248,11 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
             let len = (view.frame.width - 2 * itemPadding - sectionPadding - 30) / 2
             return CGSize(width: len, height: len + 10)
         } else {
-            let width = view.frame.width / 5
-            return CGSize(width: width, height: 45)
+            // tag width determined by content width
+            let label = UILabel()
+            label.text = filters[indexPath.row].name
+            label.sizeToFit()
+            return CGSize(width: label.frame.width + 20, height: 45) // padding: 20
         }
     }
     
