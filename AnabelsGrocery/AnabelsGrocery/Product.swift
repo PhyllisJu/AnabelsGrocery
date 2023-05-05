@@ -11,12 +11,12 @@ struct Product: Codable, Equatable {
     var id: Int
     var image: String
     var name: String
-    var category: String
+    var category: Int
     var price: Float
     var description: String
     var selectedNum: Int
     
-    init(id: Int, image: String, name: String, category: String, price: Float, description: String, selectedNum: Int) {
+    init(id: Int, image: String, name: String, category: Int, price: Float, description: String, selectedNum: Int) {
         self.id = id
         self.image = image
         self.name = name
