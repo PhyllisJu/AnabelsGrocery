@@ -109,11 +109,11 @@
 				4D7162A52A0327A200F7FF94 /* MenuDetailsViewController.swift */,
 				729E78132A033429002C7147 /* MenuCollectionViewCell.swift */,
 				4D7162A92A03423300F7FF94 /* MenuTableViewCell.swift */,
-<<<<<<< HEAD
+
 				729E78152A04A2E9002C7147 /* Utilities.swift */,
-=======
+
 				4D7162AD2A04A01700F7FF94 /* NetworkManager.swift */,
->>>>>>> fe19e3786c152e9980056b475c7ee8f7f5f32570
+ fe19e3786c152e9980056b475c7ee8f7f5f32570
 			);
 			path = AnabelsGrocery;
 			sourceTree = "<group>";
