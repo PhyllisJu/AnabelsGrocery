@@ -259,6 +259,7 @@ extension ViewController: UICollectionViewDelegate {
                 cell.configure(filterName: currentFilter.name, isSelected: currentFilter.selected)
             }
             filterProducts(val: indexPath.item, filterID: currentFilter.id)
+            print(shownDummyData)
         } else {
             // redirect users to product details page
             let products = getProductsFromUserDefaults()
