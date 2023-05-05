@@ -10,13 +10,12 @@ import UIKit
 class DetailsViewController: UIViewController {
     let picImageView = UIImageView()
     let nameLabel = UILabel()
-    let descriptionLabel = UILabel()
+    let descriptionTextView = UITextView()
     let priceLabel = UILabel()
     let addButton = UIButton()
     let subtractButton = UIButton()
     let quantityLabel = UILabel()
     let addToCartButton = UIButton()
-//    let inventoryLabel = UILabel()
     let messageLabel = UILabel()
     var product: Product
     var products: [[Product]]
@@ -70,15 +69,15 @@ class DetailsViewController: UIViewController {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
         
-        descriptionLabel.text = product.description
-        descriptionLabel.font = .systemFont(ofSize: 16)
-        descriptionLabel.lineBreakMode = .byWordWrapping
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(descriptionLabel)
+        descriptionTextView.text = product.description
+        descriptionTextView.font = .systemFont(ofSize: 16)
+        descriptionTextView.isEditable = false
+        descriptionTextView.isScrollEnabled = true
+        descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(descriptionTextView)
         
         priceLabel.text = "$\(product.price)"
-        priceLabel.font = .systemFont(ofSize: 30)
+        priceLabel.font = .boldSystemFont(ofSize: 30)
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(priceLabel)
         
@@ -108,7 +107,7 @@ class DetailsViewController: UIViewController {
         view.addSubview(quantityLabel)
         
         addToCartButton.setTitle("Confirm", for: .normal)
-        addToCartButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 25)
+        addToCartButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         addToCartButton.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
         addToCartButton.layer.cornerRadius = 10.0
         addToCartButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
@@ -131,9 +130,13 @@ class DetailsViewController: UIViewController {
             product.selectedNum += 1
             quantityLabel.text = "\(String(product.selectedNum))"
             messageLabel.text = ""
+            addToCartButton.isEnabled = true
+            addToCartButton.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
         } else {
             messageLabel.text = "Quantity is too large."
             messageLabel.textColor = .red
+            addToCartButton.isEnabled = false
+            addToCartButton.backgroundColor = .systemGray
         }
 
     }
@@ -142,6 +145,8 @@ class DetailsViewController: UIViewController {
         if (product.selectedNum > 0) {
             product.selectedNum -= 1
             messageLabel.text = ""
+            addToCartButton.isEnabled = true
+            addToCartButton.backgroundColor = hexStringToUIColor(hex: "#38AB4A")
         }
         quantityLabel.text = "\(String(product.selectedNum))"
     }
@@ -150,7 +155,7 @@ class DetailsViewController: UIViewController {
         products[productRow][productCol] = product
         updateProductsFromUserDefaults(newProducts: products)
         messageLabel.text = "Successfully added to the shopping cart!"
-        messageLabel.textColor = .green
+        messageLabel.textColor = hexStringToUIColor(hex: "#2C3684")
         if let indices = indicesOf(x: product, array: products) {
             print(indices[0])
             print(indices[1])
@@ -178,17 +183,17 @@ class DetailsViewController: UIViewController {
         ])
         
         NSLayoutConstraint.activate([
-            descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: padding),
-            descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9)
+            descriptionTextView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: padding),
+            descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            descriptionTextView.bottomAnchor.constraint(equalTo: addToCartButton.topAnchor, constant: -padding)
         ])
         
         NSLayoutConstraint.activate([
-            subtractButton.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: padding),
             subtractButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             subtractButton.widthAnchor.constraint(equalToConstant: 35),
             subtractButton.heightAnchor.constraint(equalToConstant: 35),
-
+            subtractButton.bottomAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -padding)
         ])
         
         NSLayoutConstraint.activate([
@@ -200,24 +205,26 @@ class DetailsViewController: UIViewController {
         ])
         
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20),
+            addButton.centerYAnchor.constraint(equalTo: subtractButton.centerYAnchor),
             addButton.leadingAnchor.constraint(equalTo: quantityLabel.leadingAnchor, constant: 40),
             addButton.widthAnchor.constraint(equalToConstant: 35),
             addButton.heightAnchor.constraint(equalToConstant: 35),
+            addButton.bottomAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -padding)
         ])
         
         NSLayoutConstraint.activate([
-            addToCartButton.centerYAnchor.constraint(equalTo: addButton.centerYAnchor),
-            addToCartButton.leadingAnchor.constraint(equalTo: addButton.leadingAnchor, constant: 80),
+            addToCartButton.centerYAnchor.constraint(equalTo: subtractButton.centerYAnchor),
+            addToCartButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             addToCartButton.widthAnchor.constraint(equalToConstant: 140),
             addToCartButton.heightAnchor.constraint(equalToConstant: 50),
+            addToCartButton.bottomAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -padding)
         ])
         
         NSLayoutConstraint.activate([
-            messageLabel.topAnchor.constraint(equalTo: subtractButton.bottomAnchor, constant: 20),
+            messageLabel.topAnchor.constraint(equalTo: subtractButton.bottomAnchor),
             messageLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             messageLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            messageLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            messageLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding)
         ])
         
     }
