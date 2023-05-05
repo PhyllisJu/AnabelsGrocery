@@ -25,11 +25,7 @@ app.config["SQLALCHEMY_ECHO"] = True  #what to know what our python code would t
 db.init_app(app)
 with app.app_context():
     db.create_all() # create all our tables
-"""
-example from mateo
-categories = {"id": 1, "name": "test", "description": "test"}
-db.add_categories(categories)
-"""
+
 
 # generalized response formats
 def success_response(data, code=200):
@@ -43,8 +39,8 @@ def failure_response(message, code=404):
 # -- TASK ROUTES ------------------------------------------------------
 
 @app.route("/")
-# def greet_user():
-#     return "Hello" + os.environ.get("NAME")
+def greet_user():
+    return "Hello" + os.environ.get("NAME")
 
 
 @app.route("/inventories/")
@@ -90,9 +86,9 @@ def create_inventory():
 
 
 @app.route("/inventories/<int:inventory_id>/")
-def get_task(inventory_id):
+def get_inventory_by_id(inventory_id):
     """
-    Endpoint for getting a task by id
+    Endpoint for getting an inventory by id
     """
     inventory = Inventory.query.filter_by(id = inventory_id).first()
     if inventory is None:
@@ -207,6 +203,32 @@ def create_menu():
     db.session.add(new_menu)
     db.session.commit()
     return success_response(new_menu.serialize(), 201)
+
+
+@app.route("/menus/<int:menu_id>/")
+def get_menu_by_id(menu_id):
+    """
+    Endpoint for getting a menu by id
+    """
+    menu = Menu.query.filter_by(id = menu_id).first()
+    if menu is None:
+        return failure_response(f"Task not found {menu_id}!")
+    return success_response(menu.serialize())
+
+
+
+@app.route("/menus/<int:menu_id>/", methods=["DELETE"])
+def delete_menu(menu_id):
+    """
+    Endpoint for delting a menu
+    """
+    menu = Menu.query.filter_by(id = menu_id).first()
+    if menu is None:
+        return failure_response("menu not found!")
+    db.session.delete(menu)
+    db.session.commit()
+    return success_response(menu.serialize())
+
     
 
 # -- ORDER ROUTES---------------------------------------------------
@@ -487,5 +509,6 @@ for inventory in request.get("inventories"):
 
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8002))
     app.run(host="0.0.0.0", port=8002, debug=True)
 

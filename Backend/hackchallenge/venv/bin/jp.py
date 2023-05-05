@@ -1,4 +1,4 @@
-#!/Users/apple/Downloads/hackchallenge/venv/bin/python3
+#!/Users/apple/Downloads/hackchallenge/venv/bin/python
 
 import sys
 import json
