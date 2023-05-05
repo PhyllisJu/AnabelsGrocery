@@ -35,7 +35,8 @@ class NetworkManager {
     }
     
     func createMenu(name: String, image: UIImage, description: String, completion: @escaping (Menu) -> Void) {
-        var request = URLRequest(url: url)
+        let menuPostURL = URL(string: "http://127.0.0.1:8002/menus/")!
+        var request = URLRequest(url: menuPostURL)
         request.httpMethod = "POST"
         let boundary = UUID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
