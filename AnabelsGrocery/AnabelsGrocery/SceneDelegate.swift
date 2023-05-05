@@ -21,17 +21,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Create the tab bar controller
         tabBarController = UITabBarController()
+//        tabBarController?.tabBar.barTintColor = hexStringToUIColor(hex: "#2C3684")
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: Utilities.hexStringToUIColor(hex: "#2C3684")], for: .selected)
+        tabBarController?.tabBar.selectedImageTintColor = Utilities.hexStringToUIColor(hex: "#2C3684")
 
         // Create and add child view controllers
         let inventoryViewController = ViewController()
-        inventoryViewController.title = "Inventory"
-        inventoryViewController.tabBarItem = UITabBarItem(title: "Inventory", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
+        inventoryViewController.title = "Products"
+        inventoryViewController.tabBarItem = UITabBarItem(title: "Products", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
         
         let navigationControllerInventory = UINavigationController(rootViewController: inventoryViewController)
 
         let menuViewController = MenuViewController()
-        menuViewController.title = "Menu"
-        menuViewController.tabBarItem = UITabBarItem(title: "Menu", image: UIImage(systemName: "list.dash"), selectedImage: UIImage(systemName: "list.dash.circle.fill"))
+        menuViewController.title = "Recipes"
+        menuViewController.tabBarItem = UITabBarItem(title: "Recipes", image: UIImage(systemName: "list.dash"), selectedImage: UIImage(systemName: "list.dash.circle.fill"))
         let navigationControllerMenu = UINavigationController(rootViewController: menuViewController)
 
         let cartViewController = ShoppingCartViewController()
@@ -51,7 +54,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
     }
-
+    
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.

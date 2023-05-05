@@ -7,22 +7,30 @@
 
 import Foundation
 
-class Product: Codable {
+struct Product: Codable, Equatable {
+    var id: Int
     var image: String
     var name: String
-    var category: String
+    var category: Int
     var price: Float
-    var inventory: Int
     var description: String
     var selectedNum: Int
     
-    init(image: String, name: String, category: String, price: Float, inventory: Int, description: String, selectedNum: Int) {
+    init(id: Int, image: String, name: String, category: Int, price: Float, description: String, selectedNum: Int) {
+        self.id = id
         self.image = image
         self.name = name
         self.category = category
         self.price = price
-        self.inventory = inventory
         self.description = description
         self.selectedNum = selectedNum
     }
+    
+    static func == (lhs: Product, rhs: Product) -> Bool {
+            return lhs.name == rhs.name
+        }
+}
+
+struct ProductResponse: Codable {
+    var products: [Product]
 }

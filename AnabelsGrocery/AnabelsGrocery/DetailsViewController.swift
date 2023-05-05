@@ -10,13 +10,12 @@ import UIKit
 class DetailsViewController: UIViewController {
     let picImageView = UIImageView()
     let nameLabel = UILabel()
-    let descriptionLabel = UILabel()
+    let descriptionTextView = UITextView()
     let priceLabel = UILabel()
     let addButton = UIButton()
     let subtractButton = UIButton()
     let quantityLabel = UILabel()
     let addToCartButton = UIButton()
-    let inventoryLabel = UILabel()
     let messageLabel = UILabel()
     var product: Product
     var products: [[Product]]
@@ -32,6 +31,29 @@ class DetailsViewController: UIViewController {
         
     }
     
+    init(product: Product) {
+        var products: [[Product]] = [[]]
+        if let data = UserDefaults.standard.data(forKey: "products") {
+            do {
+                let decoder = JSONDecoder()
+                products = try decoder.decode([[Product]].self, from: data)
+            } catch {
+                print("Unable to Decode Notes (\(error))")
+            }
+        }
+        self.product = product
+        self.products = products
+        
+        let rowIndex = products.firstIndex(where: { $0.contains { $0.name == product.name } })
+        let colIndex = products[rowIndex!].firstIndex(where: { $0.name == product.name })
+        
+
+        self.productRow = rowIndex!
+        self.productCol = colIndex!
+        super.init(nibName: nil, bundle: nil)
+
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -43,31 +65,27 @@ class DetailsViewController: UIViewController {
         view.addSubview(picImageView)
         
         nameLabel.text = product.name
-        nameLabel.font = .systemFont(ofSize: 20)
+        nameLabel.font = .boldSystemFont(ofSize: 30)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
         
-        descriptionLabel.text = product.description
-        descriptionLabel.font = .systemFont(ofSize: 16)
-        descriptionLabel.lineBreakMode = .byWordWrapping
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(descriptionLabel)
+        descriptionTextView.text = product.description
+        descriptionTextView.font = .systemFont(ofSize: 16)
+        descriptionTextView.isEditable = false
+        descriptionTextView.isScrollEnabled = true
+        descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(descriptionTextView)
         
         priceLabel.text = "$\(product.price)"
-        priceLabel.font = .systemFont(ofSize: 30)
+        priceLabel.font = .boldSystemFont(ofSize: 30)
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(priceLabel)
         
-        inventoryLabel.text = "Currenty in stock: \(product.inventory)"
-        inventoryLabel.font = .systemFont(ofSize: 16)
-        inventoryLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(inventoryLabel)
-        
         addButton.setTitle("+", for: .normal)
-        addButton.titleLabel?.font = .systemFont(ofSize: 35)
+        addButton.titleLabel?.font = .systemFont(ofSize: 30)
         addButton.setTitleColor(.white, for: .normal)
-        addButton.backgroundColor = .systemPurple
+        addButton.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
+        addButton.layer.cornerRadius = 5.0
         addButton.addTarget(self, action: #selector(addQuantity), for: .touchUpInside)
         addButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addButton)
@@ -75,7 +93,8 @@ class DetailsViewController: UIViewController {
         subtractButton.setTitle("-", for: .normal)
         subtractButton.titleLabel?.font = .systemFont(ofSize: 35)
         subtractButton.setTitleColor(.white, for: .normal)
-        subtractButton.backgroundColor = .systemPurple
+        subtractButton.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
+        subtractButton.layer.cornerRadius = 5.0
         subtractButton.addTarget(self, action: #selector(subtractQuantity), for: .touchUpInside)
         subtractButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(subtractButton)
@@ -83,22 +102,21 @@ class DetailsViewController: UIViewController {
         quantityLabel.text = String(product.selectedNum)
         quantityLabel.textAlignment = .center
         quantityLabel.font = .systemFont(ofSize: 20)
-        quantityLabel.backgroundColor = .systemGray5
+        quantityLabel.backgroundColor = .clear
         quantityLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(quantityLabel)
         
         addToCartButton.setTitle("Confirm", for: .normal)
-        addToCartButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 25)
-        addToCartButton.setTitleColor(.systemPurple, for: .normal)
-        addToCartButton.layer.cornerRadius = 5
-        addToCartButton.layer.borderWidth = 2
-        addToCartButton.layer.borderColor = UIColor.purple.cgColor
+        addToCartButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        addToCartButton.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
+        addToCartButton.layer.cornerRadius = 10.0
+        addToCartButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         addToCartButton.addTarget(self, action: #selector(addToCart), for: .touchUpInside)
         addToCartButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addToCartButton)
         
         messageLabel.text = ""
-        messageLabel.font = UIFont.boldSystemFont(ofSize: 20)
+        messageLabel.font = UIFont.boldSystemFont(ofSize: 15)
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.numberOfLines = 0
@@ -108,13 +126,17 @@ class DetailsViewController: UIViewController {
     }
     
     @objc func addQuantity() {
-        if (product.selectedNum < product.inventory) {
+        if (product.selectedNum < 30) {
             product.selectedNum += 1
             quantityLabel.text = "\(String(product.selectedNum))"
             messageLabel.text = ""
+            addToCartButton.isEnabled = true
+            addToCartButton.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
         } else {
-            messageLabel.text = "Quantity cannot be more than \(product.inventory)"
+            messageLabel.text = "Quantity is too large."
             messageLabel.textColor = .red
+            addToCartButton.isEnabled = false
+            addToCartButton.backgroundColor = .systemGray
         }
 
     }
@@ -123,111 +145,102 @@ class DetailsViewController: UIViewController {
         if (product.selectedNum > 0) {
             product.selectedNum -= 1
             messageLabel.text = ""
+            addToCartButton.isEnabled = true
+            addToCartButton.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
         }
         quantityLabel.text = "\(String(product.selectedNum))"
     }
     
     @objc func addToCart() {
         products[productRow][productCol] = product
-        updateUserDefaults(newProducts: products)
-        messageLabel.text = "Successfully added \(product.selectedNum) \(product.name) to the shopping cart!"
-        messageLabel.textColor = .green
-        inventoryLabel.text = "Currenty in stock: \(product.inventory)"
+        Utilities.updateProductsFromUserDefaults(newProducts: products)
+        messageLabel.text = "Successfully added to the shopping cart!"
+        messageLabel.textColor = Utilities.hexStringToUIColor(hex: "#2C3684")
+        if let indices = indicesOf(x: product, array: products) {
+            print(indices[0])
+            print(indices[1])
+        }
     }
     
     func setupConstraints() {
+        let padding = 16.0
+        
         NSLayoutConstraint.activate([
             picImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            picImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            picImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            picImageView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
+            picImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
+            picImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
+            picImageView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9)
         ])
         
         NSLayoutConstraint.activate([
-            nameLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: 40),
-            nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
+            nameLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: padding),
+            nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
         ])
         
         NSLayoutConstraint.activate([
-            descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
-            descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
+            priceLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: padding),
+            priceLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
         ])
         
         NSLayoutConstraint.activate([
-            priceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 20),
-            priceLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
+            descriptionTextView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: padding),
+            descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            descriptionTextView.bottomAnchor.constraint(equalTo: addToCartButton.topAnchor, constant: -padding)
         ])
         
         NSLayoutConstraint.activate([
-            inventoryLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 5),
-            inventoryLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
-        ])
-        
-        NSLayoutConstraint.activate([
-            subtractButton.topAnchor.constraint(equalTo: inventoryLabel.bottomAnchor, constant: 20),
-            subtractButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
-            subtractButton.widthAnchor.constraint(equalToConstant: 40),
-            subtractButton.heightAnchor.constraint(equalToConstant: 40),
-
+            subtractButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            subtractButton.widthAnchor.constraint(equalToConstant: 35),
+            subtractButton.heightAnchor.constraint(equalToConstant: 35),
+            subtractButton.bottomAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -padding)
         ])
         
         NSLayoutConstraint.activate([
             quantityLabel.centerYAnchor.constraint(equalTo: subtractButton.centerYAnchor),
-            quantityLabel.leftAnchor.constraint(equalTo: subtractButton.rightAnchor, constant: 3),
-            quantityLabel.rightAnchor.constraint(equalTo: addButton.leftAnchor, constant: -3),
+            quantityLabel.leadingAnchor.constraint(equalTo: subtractButton.trailingAnchor, constant: 3),
+            quantityLabel.trailingAnchor.constraint(equalTo: addButton.leadingAnchor, constant: -3),
             quantityLabel.topAnchor.constraint(equalTo: subtractButton.topAnchor, constant: 1),
             quantityLabel.bottomAnchor.constraint(equalTo: subtractButton.bottomAnchor, constant: -1),
         ])
         
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: inventoryLabel.bottomAnchor, constant: 20),
-            addButton.leftAnchor.constraint(equalTo: quantityLabel.leftAnchor, constant: 40),
-            addButton.widthAnchor.constraint(equalToConstant: 40),
-            addButton.heightAnchor.constraint(equalToConstant: 40),
+            addButton.centerYAnchor.constraint(equalTo: subtractButton.centerYAnchor),
+            addButton.leadingAnchor.constraint(equalTo: quantityLabel.leadingAnchor, constant: 40),
+            addButton.widthAnchor.constraint(equalToConstant: 35),
+            addButton.heightAnchor.constraint(equalToConstant: 35),
+            addButton.bottomAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -padding)
         ])
         
         NSLayoutConstraint.activate([
-            addToCartButton.centerYAnchor.constraint(equalTo: addButton.centerYAnchor),
-            addToCartButton.leftAnchor.constraint(equalTo: addButton.leftAnchor, constant: 80),
+            addToCartButton.centerYAnchor.constraint(equalTo: subtractButton.centerYAnchor),
+            addToCartButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             addToCartButton.widthAnchor.constraint(equalToConstant: 140),
             addToCartButton.heightAnchor.constraint(equalToConstant: 50),
+            addToCartButton.bottomAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -padding)
         ])
         
         NSLayoutConstraint.activate([
-            messageLabel.topAnchor.constraint(equalTo: subtractButton.bottomAnchor, constant: 20),
-            messageLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
-            messageLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 40),
-            messageLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            messageLabel.topAnchor.constraint(equalTo: subtractButton.bottomAnchor),
+            messageLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            messageLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            messageLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding)
         ])
         
     }
     
-    func updateUserDefaults(newProducts: [[Product]]) {
-        do {
-            let encoder = JSONEncoder()
-            let data = try encoder.encode(newProducts)
-            UserDefaults.standard.set(data, forKey: "products")
-        } catch {
-            print("Unable to Encode Note (\(error))")
-        }
-    }
-
-    func getUserDefaults() -> [[Product]] {
-        var products: [[Product]] = [[]]
-        if let data = UserDefaults.standard.data(forKey: "products") {
-            do {
-                let decoder = JSONDecoder()
-                products = try decoder.decode([[Product]].self, from: data)
-            } catch {
-                print("Unable to Decode Notes (\(error))")
-            }
-        }
-        return products
-    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func indicesOf(x: Product, array: [[Product]]) -> [Int]? {
+        if let rowIndex = array.firstIndex(where: { $0.contains { $0.name == x.name } }),
+           let colIndex = array[rowIndex].firstIndex(where: { $0.name == x.name }) {
+            return [rowIndex, colIndex]
+        } else {
+            return nil
+        }
     }
 }
 

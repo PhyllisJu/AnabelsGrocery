@@ -12,6 +12,7 @@ class MenuViewController: UIViewController {
     var collectionView: UICollectionView!
     var products: [[Product]] = []
     private var menus: [Menu] = []
+    let addButton = UIButton()
     
     // constants
     let itemPadding: CGFloat = 10
@@ -22,19 +23,19 @@ class MenuViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        title = "Menu"
+        title = "Recipes"
         view.backgroundColor = .white
         
         // sample data initialization
-        products = getUserDefaults()
+        products = Utilities.getProductsFromUserDefaults()
         menus = [
-            Menu(image: "sample", name: "Menu 1", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]]),
-            Menu(image: "sample", name: "Menu 2 Long Long Name", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][2], products[1][0]]),
-            Menu(image: "sample", name: "Menu 3", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][0], products[2][1], products[3][2], products[4][0], products[5][0], products[5][2]]),
-            Menu(image: "sample", name: "Menu 4", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]]),
-            Menu(image: "sample", name: "Menu 5", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][2], products[1][0]]),
-            Menu(image: "sample", name: "Menu 6", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][0], products[2][1], products[3][2], products[4][0], products[5][0], products[5][2]]),
-            Menu(image: "sample", name: "Menu 7", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]])
+            Menu(image: "sample", name: "Recipe 1", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]]),
+            Menu(image: "sample", name: "Recipe 2 Long Long Name", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][2], products[1][0]]),
+            Menu(image: "sample", name: "Recipe 3", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][0], products[2][1], products[3][2], products[4][0], products[5][0], products[5][2]]),
+            Menu(image: "sample", name: "Recipe 4", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]]),
+            Menu(image: "sample", name: "Recipe 5", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][2], products[1][0]]),
+            Menu(image: "sample", name: "Recipe 6", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][0], products[2][1], products[3][2], products[4][0], products[5][0], products[5][2]]),
+            Menu(image: "sample", name: "Recipe 7", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", ingredients: [products[0][1], products[1][1], products[2][0]])
         ]
         
         let flowLayout = UICollectionViewFlowLayout()
@@ -50,32 +51,38 @@ class MenuViewController: UIViewController {
         collectionView.delegate = self
         view.addSubview(collectionView)
         
+        addButton.frame = CGRect(x: 0, y: 0, width: 60, height: 60)
+        addButton.backgroundColor = .white
+        addButton.layer.cornerRadius = addButton.bounds.width / 2
+        addButton.setImage(UIImage(named: "add"), for: .normal)
+        addButton.addTarget(self, action: #selector(onAddButton), for: .touchUpInside)
+        addButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(addButton)
+        
         setUpConstraints()
     }
     
-    func setUpConstraints() {
-        let collectionViewPadding: CGFloat = 12
-        
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: collectionViewPadding),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: collectionViewPadding),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -collectionViewPadding),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -collectionViewPadding),
-        ])
+    @objc func onAddButton() {
+        // navigate to create menu page
+        self.navigationController?.pushViewController(CreateMenuViewController(), animated: true)
     }
     
-    
-    func getUserDefaults() -> [[Product]] {
-        var products: [[Product]] = [[]]
-        if let data = UserDefaults.standard.data(forKey: "products") {
-            do {
-                let decoder = JSONDecoder()
-                products = try decoder.decode([[Product]].self, from: data)
-            } catch {
-                print("Unable to Decode Notes (\(error))")
-            }
-        }
-        return products
+    func setUpConstraints() {
+        let padding: CGFloat = 16.0
+        
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+        ])
+        
+        NSLayoutConstraint.activate([
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            addButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
+            addButton.widthAnchor.constraint(equalToConstant: 60),
+            addButton.heightAnchor.constraint(equalToConstant: 60)
+        ])
     }
 }
 
@@ -104,6 +111,7 @@ extension MenuViewController: UICollectionViewDelegateFlowLayout {
 extension MenuViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // TODO: redirect users to menu details page
+        self.navigationController?.pushViewController(MenuDetailsViewController(menu: menus[indexPath.item]), animated: true)
 //        self.navigationController?.pushViewController(DetailsViewController(menu: menus[indexPath.item]), animated: true)
     }
 }

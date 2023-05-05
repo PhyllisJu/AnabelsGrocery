@@ -39,7 +39,7 @@ class FilterCollectionViewCell: UICollectionViewCell {
     func configure(filterName: String, isSelected: Bool) {
         label.text = filterName
         if (isSelected) {
-            contentView.backgroundColor = .systemPurple
+            contentView.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
             label.textColor = .white
         } else {
             contentView.backgroundColor = .systemGray6
