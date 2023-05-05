@@ -14,5 +14,12 @@ class CreateMenuViewController: UIViewController {
 
         title = "Create Recipe"
         view.backgroundColor = .white
+        
+        let postBarButton = UIBarButtonItem(title: "Post", style: .plain, target: self, action: #selector(onPost))
+        navigationItem.rightBarButtonItem = postBarButton
+    }
+    
+    @objc func onPost() {
+        
     }
 }
