@@ -12,7 +12,7 @@ class MenuDetailsViewController: UIViewController {
     let menu: Menu
     let picImageView = UIImageView()
     let nameLabel = UILabel()
-    let descriptionLabel = UILabel()
+    let descriptionTextView = UITextView()
     
     init(menu: Menu) {
         self.menu = menu
@@ -35,39 +35,40 @@ class MenuDetailsViewController: UIViewController {
         view.addSubview(picImageView)
         
         nameLabel.text = menu.name
-        nameLabel.font = .systemFont(ofSize: 20)
+        nameLabel.font = .boldSystemFont(ofSize: 30)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
         
-        descriptionLabel.text = menu.description
-        descriptionLabel.font = .systemFont(ofSize: 16)
-        descriptionLabel.lineBreakMode = .byWordWrapping
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(descriptionLabel)
+        descriptionTextView.text = menu.description
+        descriptionTextView.font = .systemFont(ofSize: 16)
+        descriptionTextView.isEditable = false
+        descriptionTextView.isScrollEnabled = true
+        descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(descriptionTextView)
         
         setupConstraints()
-
-        // Do any additional setup after loading the view.
     }
     
     func setupConstraints() {
+        let padding = 16.0
+        
         NSLayoutConstraint.activate([
             picImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            picImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            picImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            picImageView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
+            picImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
+            picImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
+            picImageView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9)
         ])
         
         NSLayoutConstraint.activate([
-            nameLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: 40),
-            nameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40),
+            nameLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: padding),
+            nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
         ])
         
         NSLayoutConstraint.activate([
-            descriptionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
-            descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            descriptionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
+            descriptionTextView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: padding),
+            descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            descriptionTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding) // TODO: figure out how to make this entire page scrollable
         ])
         
     }
