@@ -212,7 +212,7 @@ def get_menu_by_id(menu_id):
     """
     menu = Menu.query.filter_by(id = menu_id).first()
     if menu is None:
-        return failure_response(f"Task not found {menu_id}!")
+        return failure_response(f"Menu not found {menu_id}!")
     return success_response(menu.serialize())
 
 
@@ -239,8 +239,39 @@ def get_orders():
     """
     orders = []
     for order in Order.query.all(): 
-        orders.append(order.serialize()) 
+        orders.append(order.simple_serialize()) 
     return success_response({"orders": orders})
+
+# @app.route("/orders/", methods=["POST"])
+# def create_order():
+#     """
+#     Endpoint for creating a new order
+#     """
+#     body = json.loads(request.data)  
+#     new_order= Order(
+#         total_price = body.get("total_price", 0),     
+#         valid = body.get("total_price", False)
+#     )
+
+#     new_order = Order()
+
+#     db.session.add(new_order)
+#     db.session.commit()
+
+#     #inventory.type = json
+#     inventory_list = body.get("inventories")
+
+#     try:
+#       for inventory in inventory_list:
+#         print(new_order.id)
+#         simlpe_create_orderitem(new_order.id, inventory) 
+#     except Exception as e:
+#         return failure_response(f"{e}")
+
+#     db.session.commit()
+
+#     return success_response(new_order.serialize(), 201)
+
 
 @app.route("/orders/", methods=["POST"])
 def create_order():
@@ -253,30 +284,50 @@ def create_order():
         valid = body.get("total_price", False)
     )
 
+    new_order = Order()
+
     db.session.add(new_order)
     db.session.commit()
 
     #inventory.type = json
     inventory_list = body.get("inventories")
-    print(inventory_list)
 
     try:
       for inventory in inventory_list:
-        print(new_order.id)
         simlpe_create_orderitem(new_order.id, inventory) 
     except Exception as e:
         return failure_response(f"{e}")
 
     db.session.commit()
 
-    return success_response(new_order.serialize(), 201)
+    new_order.time_created = datetime.datetime.now()
+    # if the order is created after 19 
+    if new_order.time_created.hour > 19:
+      pick_up_time = new_order.time_created + datetime.timedelta(days = 1)
+      pick_up_time = pick_up_time.replace(hour =  18, minute= 59, second= 59)
+    else:
+      pick_up_time = new_order.time_created + datetime.timedelta(hours = 2)
+      if  pick_up_time.hour > 19:
+        pick_up_time = pick_up_time.replace(hour =  18, minute= 59, second= 59)
+
+    new_order.pick_up_by = pick_up_time 
+    new_order.valid = True
+
+    db.session.commit()
+
+    return success_response(new_order.simple_serialize(), 201)
 
 
 @app.route("/orders/<int:order_id>/", methods=["GET"])
 def get_order_by_id(order_id):
     """
-
+    Endpoint for getting an order by id
     """
+    order = Order.query.filter_by(id = order_id).first()
+    if order_id is None:
+        return failure_response(f"Task not found {order_id}!")
+    return success_response(order.simple_serialize())
+
 
 @app.route("/orders/<int:order_id>/", methods=["POST"])
 def add_orderitem_to_order(order_id):
@@ -328,9 +379,7 @@ def submit_order(order_id):
     order.pick_up_by = pick_up_time 
     order.valid = True
 
-    print("type of order", type(order))
     db.session.commit()
-    print("type of order", type(order))
 
     return success_response(order.serialize())
 
