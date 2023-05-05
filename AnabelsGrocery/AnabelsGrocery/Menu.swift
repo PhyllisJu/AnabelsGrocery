@@ -8,15 +8,17 @@
 import Foundation
 
 class Menu : Codable {
-    var image: String
+    var id: Int
+    var image: String // image url
     var name: String
     var description: String
-    var ingredients: [Product]
+    var inventories: [Product]
     
-    init(image: String, name: String, description: String, ingredients: [Product]) {
+    init(id: Int, image: String, name: String, description: String, inventories: [Product]) {
+        self.id = id
         self.image = image
         self.name = name
         self.description = description
-        self.ingredients = ingredients
+        self.inventories = inventories
     }
 }
