@@ -160,7 +160,7 @@ class ShoppingCartViewController: UIViewController {
         }
         if allSelectedNumZero() {
             totalPrice = 0
-            UserDefaults.standard.set(totalPrice, forKey: "totalPrice")
+            //UserDefaults.standard.set(totalPrice, forKey: "totalPrice")
         }
         priceLabel.text = "Total: " + String(format: "$%.2f", totalPrice)
     }
