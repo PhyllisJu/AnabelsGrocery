@@ -2,7 +2,7 @@ import json
 
 from db import db
 from flask import Flask, request
-from db import Inventory
+from db import Task
 from db import Category
 from db import Menu
 from db import Order
@@ -45,7 +45,7 @@ def get_inventories():
     Endpoint for getting all inventories
     """
     inventories = []
-    for inventory in Inventory.query.all():  
+    for inventory in Task.query.all():  
         inventories.append(inventory.serialize_for_render()) 
 
     return success_response({"inventories": inventories})
@@ -58,7 +58,7 @@ def create_inventory():
     Endpoint for creating a new task
     """
     body = json.loads(request.data)  
-    new_inventory= Inventory(
+    new_inventory= Task(
         image = body.get("image"),
         name = body.get("name"),
         description = body.get("description"),
@@ -71,7 +71,7 @@ def get_inventory_by_id(inventory_id):
     """
     Endpoint for getting an inventory by id
     """
-    inventory = Inventory.query.filter_by(id = inventory_id).first()
+    inventory = Task.query.filter_by(id = inventory_id).first()
     if inventory is None:
         return failure_response(f"Task not found {inventory_id}!")
     return success_response(inventory.serialize_for_render())
@@ -85,7 +85,7 @@ def assign_category(inventory_id):
     Endpoint for assigning a category
     to an inventory by id
     """
-    inventory = Inventory.query.filter_by(id = inventory_id).first()
+    inventory = Task.query.filter_by(id = inventory_id).first()
     if inventory is None:
         return failure_response("Inventory not found!")
     
@@ -97,7 +97,6 @@ def assign_category(inventory_id):
     if category is None:
         category = Category(name = name, description= description)
     inventory.categories.append(category)
-    db.session.commit()
     return success_response(category.serialize())
 
 
