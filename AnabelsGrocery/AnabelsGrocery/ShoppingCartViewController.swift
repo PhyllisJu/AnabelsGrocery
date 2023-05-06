@@ -145,13 +145,14 @@ class ShoppingCartViewController: UIViewController {
     
     func calculateTotalPrice() {
         let products = Utilities.getProductsFromUserDefaults()
+        let order = Utilities.getReservationFromUserDefaults()
         totalPrice = 0.0
         for i in 0..<products.count {
             for j in 0..<products[i].count {
                 totalPrice += Float(products[i][j].selectedNum) * products[i][j].price
             }
         }
-        if (totalPrice == 0.0) {
+        if (totalPrice == 0.0 || order.count != 0) {
             reserveBtn.isEnabled = false
             reserveBtn.backgroundColor = .systemGray
         } else {
