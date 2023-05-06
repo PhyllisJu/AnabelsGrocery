@@ -174,7 +174,7 @@ class DetailsViewController: UIViewController {
             picImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             picImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
             picImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
-            picImageView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9)
+            picImageView.heightAnchor.constraint(equalTo: picImageView.widthAnchor, multiplier: picImageView.image!.size.height / picImageView.image!.size.width)
         ])
         
         NSLayoutConstraint.activate([

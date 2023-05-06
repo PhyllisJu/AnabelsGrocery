@@ -19,6 +19,7 @@ class MenuCollectionViewCell: UICollectionViewCell {
         
         menuImageView.layer.cornerRadius = 10
         menuImageView.clipsToBounds = true
+        menuImageView.contentMode = .scaleAspectFill
         menuImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(menuImageView)
         
