@@ -9,8 +9,8 @@ from db import Order
 from db import Orderitem
 from db import Asset
 
-import os
-import datetime
+
+
 
 # define db filename
 db_filename = "todo.db"
@@ -54,17 +54,6 @@ def get_inventories():
 
     return success_response({"inventories": inventories})
 
-
-@app.route("/test/inventories/")
-def test_get_inventories():
-    """
-    Endpoint for getting all inventories
-    """
-    inventories = []
-    for inventory in Inventory.query.all():  
-        inventories.append(inventory.serialize_all()) 
-
-    return success_response({"inventories": inventories})
 
 
 @app.route("/inventories/", methods=["POST"])
@@ -242,36 +231,6 @@ def get_orders():
         orders.append(order.simple_serialize()) 
     return success_response({"orders": orders})
 
-# @app.route("/orders/", methods=["POST"])
-# def create_order():
-#     """
-#     Endpoint for creating a new order
-#     """
-#     body = json.loads(request.data)  
-#     new_order= Order(
-#         total_price = body.get("total_price", 0),     
-#         valid = body.get("total_price", False)
-#     )
-
-#     new_order = Order()
-
-#     db.session.add(new_order)
-#     db.session.commit()
-
-#     #inventory.type = json
-#     inventory_list = body.get("inventories")
-
-#     try:
-#       for inventory in inventory_list:
-#         print(new_order.id)
-#         simlpe_create_orderitem(new_order.id, inventory) 
-#     except Exception as e:
-#         return failure_response(f"{e}")
-
-#     db.session.commit()
-
-#     return success_response(new_order.serialize(), 201)
-
 
 @app.route("/orders/", methods=["POST"])
 def create_order():
@@ -302,15 +261,6 @@ def create_order():
 
     new_order.time_created = datetime.datetime.now()
     # if the order is created after 19 
-    if new_order.time_created.hour > 19:
-      pick_up_time = new_order.time_created + datetime.timedelta(days = 1)
-      pick_up_time = pick_up_time.replace(hour =  18, minute= 59, second= 59)
-    else:
-      pick_up_time = new_order.time_created + datetime.timedelta(hours = 2)
-      if  pick_up_time.hour > 19:
-        pick_up_time = pick_up_time.replace(hour =  18, minute= 59, second= 59)
-
-    new_order.pick_up_by = pick_up_time 
     new_order.valid = True
 
     db.session.commit()
@@ -341,114 +291,9 @@ def add_orderitem_to_order(order_id):
     
     orderitem = Orderitem.query.filter_by(order_id = order_id, inventory_id = inventory_id ).first()
 
-    try:
-      if orderitem is None:
-          orderitem = create_orderitem(inventory_id, num_sel, order_id)
-      else:
-          return failure_response("order item already exists! Use update order item instead")
-      
-    except Exception as e:
-        return failure_response(f"{e}")
-        
-    return success_response(orderitem.serialize())
 
+    return failure_response("order item already exists! Use update order item instead")
 
-
-
-@app.route("/orders/submit/<int:order_id>/", methods=["POST"])
-def submit_order(order_id):
-    """
-    Endpoint for submitting all orderitems with pickup information 
-    """
-    order = Order.query.filter_by(id = order_id).first()
-    if order is None:
-        return failure_response("order not found!")
-
-    body = json.loads(request.data)  
-    order.user_name =  body.get("user_name")
-    order.time_created = datetime.datetime.now()
-    # if the order is created after 19 
-    if order.time_created.hour > 19:
-      pick_up_time = order.time_created + datetime.timedelta(days = 1)
-      pick_up_time = pick_up_time.replace(hour =  18, minute= 59, second= 59)
-    else:
-      pick_up_time = order.time_created + datetime.timedelta(hours = 2)
-      if  pick_up_time.hour > 19:
-        pick_up_time = pick_up_time.replace(hour =  18, minute= 59, second= 59)
-
-    order.pick_up_by = pick_up_time 
-    order.valid = True
-
-    db.session.commit()
-
-    return success_response(order.serialize())
-
-
-@app.route("/orders/<int:order_id>/", methods=["DELETE"])
-def delete_order(order_id):
-    """
-    Endpoint for delting an order
-    """
-    order = Order.query.filter_by(id = order_id).first()
-    if order is None:
-        return failure_response("Order not found!")
-    db.session.delete(order)
-    db.session.commit()
-    return success_response(order.serialize())
-
-
-# -- ORDERITEM ROUTES---------------------------------------------------
-@app.route("/orderitems/", methods=["GET"])
-def get_orderitems():
-    """
-    Endpoint for getting all orderitems
-    """
-    orderitems = []
-    for orderitem in Orderitem.query.all(): 
-        orderitems.append(orderitem.serialize()) 
-    return success_response({"orderitems": orderitems})
-
-def simlpe_create_orderitem(order_id, inventory_json):
-    """
-    Return the total price to the orderitem
-    """
-    inventory_id = inventory_json.get("inventory_id")
-    num_sel =  inventory_json.get("num_sel")
-
-    orderitem = create_orderitem(inventory_id, num_sel, order_id)
-
-def create_orderitem(inventory_id, num_sel, order_id):
-    """
-    Create an orderitem from inventory_id, num_sel, and order_id
-    Return the Oderitem object
-    """
-
-    order = Order.query.filter_by(id = order_id ).first()
-    if order is None:
-        raise Exception("Order not found!")
-
-    inventory = Inventory.query.filter_by(id = inventory_id).first()
-    if inventory is None:
-        raise Exception("Inventory not found!")
-
-    orderitem = Orderitem(
-        inventory_id = inventory_id,
-        num_sel =  num_sel,
-        order_id = order_id
-    )
-
-    price = inventory.price * num_sel
-    order.total_price += price
-
-    order.order_items.append(orderitem)
-    inventory.order_items.append(orderitem)
-
-    db.session.add(orderitem)
-    db.session.commit()
-
-    print("orderitem type in create order item", type(orderitem))
-
-    return orderitem
 
 
 @app.route("/orderitems/<int:order_id>/<int:inventory_id>/increase/", methods=["POST"])
@@ -522,42 +367,4 @@ def delete_orderitem(order_id, inventory_id):
 
     return success_response(order.serialize())
 
-
-
-"""
-POST /order
-{
-  "user_name": "test",
-  "time_pickup": "test",
-  "total_price": "test",
-  "inventories": [
-    { "inventory_id": 1,
-      "num_sel": 3,
-    },
-    { "inventory_id": 2,
-      "num_sel": 3,
-    }
-  ]
-}
-
-/order:
-db.create_order(request)
-# simple create order
-# returns order_id of newly created order
-
-db.create_orderitem(order_id, request):
-
-db.create_order:
-for inventory in request.get("inventories"):
-  inventory['order_id'] = order_id
-  orderitem = OrderItem(inventory)
-
-
-
-"""
-
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8002))
-    app.run(host="0.0.0.0", port=8002, debug=True)
 
