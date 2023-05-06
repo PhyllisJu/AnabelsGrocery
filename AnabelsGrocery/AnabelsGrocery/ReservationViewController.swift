@@ -7,14 +7,48 @@
 
 import UIKit
 
-class ReservationViewController: UIViewController {
+class ReservationViewController: UIViewController, ShoppingCartViewControllerDelegate {
+
+    
     var totalPrice : Float = 0.0
+    var itemsInOrder = [Product]()
     let pickupLabel = UILabel()
     let addressLabel = UILabel()
     let hoursLabel = UILabel()
     let priceLabel = UILabel()
     let cancelBtn = UIButton()
+    let confirmBtn = UIButton()
     let stackView = UIStackView()
+    
+    let cellReuseID = "cellReuseID"
+    
+    func passDataToReservation(data: [Product]) {
+        //itemsInOrder = data
+    }
+    
+    init(itemsInOrder: [Product]) {
+        self.itemsInOrder = []
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    lazy var collectionView: UICollectionView = {
+            let layout = UICollectionViewFlowLayout()
+            layout.scrollDirection = .horizontal
+            layout.minimumInteritemSpacing = 10
+            
+            let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+            collectionView.translatesAutoresizingMaskIntoConstraints = false
+            collectionView.backgroundColor = .white
+            collectionView.delegate = self
+            collectionView.dataSource = self
+            
+            collectionView.register(ReservationCollectionViewCell.self, forCellWithReuseIdentifier: cellReuseID)
+            
+            return collectionView
+        }()
     // TODO: Add a tableview of reserved items
 
     override func viewDidLoad() {
@@ -50,14 +84,23 @@ class ReservationViewController: UIViewController {
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(priceLabel)
         
-        cancelBtn.setTitle("Cancel Reservation", for: .normal)
+        cancelBtn.setTitle("Cancel", for: .normal)
         cancelBtn.backgroundColor = .systemRed
         cancelBtn.layer.cornerRadius = 10.0
         cancelBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         cancelBtn.setTitleColor(.white, for: .normal)
         cancelBtn.setContentHuggingPriority(.required, for: .horizontal)
-        cancelBtn.addTarget(self, action: #selector(onCancel), for: .touchUpInside)
+        cancelBtn.addTarget(self, action: #selector(onClear), for: .touchUpInside)
         cancelBtn.translatesAutoresizingMaskIntoConstraints = false
+        
+        confirmBtn.setTitle("Picked Up", for: .normal)
+        confirmBtn.layer.cornerRadius = 10.0
+        confirmBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+        confirmBtn.setTitleColor(.white, for: .normal)
+        confirmBtn.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
+        confirmBtn.setContentHuggingPriority(.required, for: .horizontal)
+        confirmBtn.addTarget(self, action: #selector(onClear), for: .touchUpInside)
+        confirmBtn.translatesAutoresizingMaskIntoConstraints = false
         
         let spacerView = UIView()
         spacerView.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -65,6 +108,7 @@ class ReservationViewController: UIViewController {
         
         stackView.addArrangedSubview(spacerView)
         stackView.addArrangedSubview(cancelBtn)
+        stackView.addArrangedSubview(confirmBtn)
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.distribution = .fill
@@ -73,6 +117,8 @@ class ReservationViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stackView)
         
+        view.addSubview(collectionView)
+        updateCollectionView(data: itemsInOrder)
         setupConstraints()
     }
     
@@ -80,11 +126,36 @@ class ReservationViewController: UIViewController {
         super.viewWillAppear(animated)
         totalPrice = UserDefaults.standard.float(forKey: "totalPrice")
         priceLabel.text = "Total Price: " + String(format: "$%.2f", totalPrice)
+        itemsInOrder = Utilities.getReservationFromUserDefaults()
+        collectionView.isHidden = false
+        collectionView.reloadData()
+        print(itemsInOrder.count)
     }
     
-    @objc func onCancel() {
-        // TODO: delete request
+    @objc func onClear() {
+        // TODO: clear the reservation page
+        print("clicked")
+        Utilities.updateReservationFromUserDefaults(newArray: [])
+        UserDefaults.standard.set(0.00, forKey: "totalPrice")
+        priceLabel.text = "$0.00"
+        collectionView.isHidden = true
+        collectionView.reloadData()
+        var products = Utilities.getProductsFromUserDefaults()
+        // create order
+        for i in 0..<products.count {
+            for j in 0..<products[i].count {
+                products[i][j].selectedNum = 0
+            }
+        }
+        Utilities.updateProductsFromUserDefaults(newProducts: products)
+        itemsInOrder = []
     }
+    
+    func updateCollectionView(data: [Product]) {
+        //itemsInOrder = data
+        collectionView.reloadData()
+    }
+    
     
     func setupConstraints() {
         let padding = 16.0
@@ -117,11 +188,51 @@ class ReservationViewController: UIViewController {
         ])
         
         NSLayoutConstraint.activate([
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            collectionView.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: padding),
+            collectionView.heightAnchor.constraint(equalToConstant: 180)
+        ])
+        
+        NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
             stackView.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
+    
 
 }
+
+extension ReservationViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return itemsInOrder.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseID, for: indexPath) as! ReservationCollectionViewCell
+            
+            let product = itemsInOrder[indexPath.item]
+            cell.update(product: product)
+            
+            return cell
+        }
+}
+
+extension ReservationViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+            let len = (view.frame.width - 2 * 10 - 5 - 30) / 2
+            return CGSize(width: len, height: len+10)
+    }
+}
+
+//extension ReservationViewController: UICollectionViewDelegate {
+//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//
+//    }
+//}

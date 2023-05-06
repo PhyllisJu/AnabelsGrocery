@@ -19,6 +19,10 @@ class ShoppingCartViewController: UIViewController {
     let priceLabel = UILabel()
     let reserveBtn = UIButton()
     let stackView = UIStackView()
+    
+    var orderContent = [[String:Int]]()
+    var itemsInOrder = [Product]()
+    weak var delegate: ShoppingCartViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,38 +97,72 @@ class ShoppingCartViewController: UIViewController {
         // update total price in user defaults
         UserDefaults.standard.set(totalPrice, forKey: "totalPrice")
         
-        // reset totalPrice value and products in user defaults
-        totalPrice = 0.0
+
 
         var products = Utilities.getProductsFromUserDefaults()
 
-
+        // create order
         for i in 0..<products.count {
             for j in 0..<products[i].count {
+                if products[i][j].selectedNum > 0 {
+                    itemsInOrder.append(products[i][j])
+                    orderContent.append([
+                        "inventory_id": products[i][j].id,
+                        "num_sel" :products[i][j].selectedNum
+                    ])
+                }
                 products[i][j].selectedNum = 0
             }
         }
+        NetworkManager.shared.createOrder(total_price: totalPrice, inventories: orderContent) { order in
+            print("success")
+        }
+        
         Utilities.updateProductsFromUserDefaults(newProducts: products)
+        print(allSelectedNumZero())
+        
+        // reset totalPrice value and products in user defaults
+        totalPrice = 0.0
+        
+        //delegate?.passDataToReservation(data: itemsInOrder)
+        Utilities.updateReservationFromUserDefaults(newArray: itemsInOrder)
         
         // navigate to the reservation page
-        self.navigationController?.pushViewController(ReservationViewController(), animated: true)
+        self.navigationController?.pushViewController(ReservationViewController(itemsInOrder: itemsInOrder), animated: true)
     }
     
     // helper functions
+    func allSelectedNumZero() -> Bool{
+        let products = Utilities.getProductsFromUserDefaults()
+        for i in 0..<products.count {
+            for j in 0..<products[i].count {
+                if products[i][j].selectedNum > 0 {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+    
     func calculateTotalPrice() {
         let products = Utilities.getProductsFromUserDefaults()
+        let order = Utilities.getReservationFromUserDefaults()
         totalPrice = 0.0
         for i in 0..<products.count {
             for j in 0..<products[i].count {
                 totalPrice += Float(products[i][j].selectedNum) * products[i][j].price
             }
         }
-        if (totalPrice == 0.0) {
+        if (totalPrice == 0.0 || order.count != 0) {
             reserveBtn.isEnabled = false
             reserveBtn.backgroundColor = .systemGray
         } else {
             reserveBtn.isEnabled = true
             reserveBtn.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
+        }
+        if allSelectedNumZero() {
+            totalPrice = 0
+            //UserDefaults.standard.set(totalPrice, forKey: "totalPrice")
         }
         priceLabel.text = "Total: " + String(format: "$%.2f", totalPrice)
     }
@@ -133,6 +171,9 @@ class ShoppingCartViewController: UIViewController {
 extension ShoppingCartViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         let products = Utilities.getProductsFromUserDefaults()
+        if allSelectedNumZero() {
+            return 0
+        }
         return products.count
     }
     
@@ -149,4 +190,15 @@ extension ShoppingCartViewController: UITableViewDelegate, UITableViewDataSource
         cell.configure(with: item)
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let products = Utilities.getProductsFromUserDefaults()
+        let filteredItems = products[indexPath.section].filter { $0.selectedNum > 0 }
+        let item = filteredItems[indexPath.row]
+        self.navigationController?.pushViewController(DetailsViewController(product: item), animated: true)
+    }
+}
+
+protocol ShoppingCartViewControllerDelegate: AnyObject {
+    func passDataToReservation(data: [Product])
 }

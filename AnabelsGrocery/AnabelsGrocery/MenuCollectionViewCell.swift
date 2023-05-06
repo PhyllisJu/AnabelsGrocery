@@ -19,10 +19,11 @@ class MenuCollectionViewCell: UICollectionViewCell {
         
         menuImageView.layer.cornerRadius = 10
         menuImageView.clipsToBounds = true
+        menuImageView.contentMode = .scaleAspectFill
         menuImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(menuImageView)
         
-        nameLabel.font = .systemFont(ofSize: 18)
+        nameLabel.font = .systemFont(ofSize: 15)
         nameLabel.textColor = .black
         nameLabel.lineBreakMode = .byWordWrapping
         nameLabel.numberOfLines = 2
@@ -52,7 +53,7 @@ class MenuCollectionViewCell: UICollectionViewCell {
     }
     
     func update(menu: Menu) {
-        menuImageView.image = UIImage(named: menu.image)
+        menuImageView.image = UIImage(named: menu.image.url)
         nameLabel.text = menu.name
     }
 }

@@ -21,6 +21,7 @@ class ProductCollectionViewCell: UICollectionViewCell {
         productImageView.layer.cornerRadius = 10
         productImageView.clipsToBounds = true
         productImageView.translatesAutoresizingMaskIntoConstraints = false
+        productImageView.contentMode = .scaleAspectFill
         contentView.addSubview(productImageView)
         
         nameLabel.font = .systemFont(ofSize: 18)
