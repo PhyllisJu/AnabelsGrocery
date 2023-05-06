@@ -21,6 +21,8 @@ class ShoppingCartViewController: UIViewController {
     let stackView = UIStackView()
     
     var orderContent = [[String:Int]]()
+    var itemsInOrder = [Product]()
+    weak var delegate: ShoppingCartViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,6 +105,7 @@ class ShoppingCartViewController: UIViewController {
         for i in 0..<products.count {
             for j in 0..<products[i].count {
                 if products[i][j].selectedNum > 0 {
+                    itemsInOrder.append(products[i][j])
                     orderContent.append([
                         "inventory_id": products[i][j].id,
                         "num_sel" :products[i][j].selectedNum
@@ -120,8 +123,11 @@ class ShoppingCartViewController: UIViewController {
         // reset totalPrice value and products in user defaults
         totalPrice = 0.0
         
+        //delegate?.passDataToReservation(data: itemsInOrder)
+        Utilities.updateReservationFromUserDefaults(newArray: itemsInOrder)
+        
         // navigate to the reservation page
-        self.navigationController?.pushViewController(ReservationViewController(), animated: true)
+        self.navigationController?.pushViewController(ReservationViewController(itemsInOrder: itemsInOrder), animated: true)
     }
     
     // helper functions
@@ -189,4 +195,8 @@ extension ShoppingCartViewController: UITableViewDelegate, UITableViewDataSource
         let item = filteredItems[indexPath.row]
         self.navigationController?.pushViewController(DetailsViewController(product: item), animated: true)
     }
+}
+
+protocol ShoppingCartViewControllerDelegate: AnyObject {
+    func passDataToReservation(data: [Product])
 }

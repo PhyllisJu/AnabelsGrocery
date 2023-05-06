@@ -40,7 +40,6 @@ class ViewController: UIViewController {
     let filterReuseID = "filterReuseID"
     let collectionViewTag = 0
     let filterCollectionViewTag = 1
-    var test = 3
     
     var dummyData: [Product] = []
     var shownDummyData: [Product] = []
@@ -235,7 +234,6 @@ extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if (collectionView.tag == collectionViewTag) {
             if let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerReuseID, for: indexPath) as? ProductCollectionViewHeader {
-                print(indexPath.section)
                 header.configure(section: sections[indexPath.section])
                 return header
             }
@@ -276,7 +274,6 @@ extension ViewController: UICollectionViewDelegate {
                 cell.configure(filterName: currentFilter.name, isSelected: currentFilter.selected)
             }
             filterProducts(val: indexPath.item, filterID: currentFilter.id)
-            print(self.test)
         } else {
             // redirect users to product details page
             let products = Utilities.getProductsFromUserDefaults()

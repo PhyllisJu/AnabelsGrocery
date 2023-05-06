@@ -40,6 +40,16 @@ class Utilities {
             print("Unable to Encode Note (\(error))")
         }
     }
+    
+    static func updateReservationFromUserDefaults(newArray: [Product]) {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(newArray)
+            UserDefaults.standard.set(data, forKey: "reservation")
+        } catch {
+            print("Unable to Encode Note (\(error))")
+        }
+    }
 
     static func getProductsFromUserDefaults() -> [[Product]] {
         var products: [[Product]] = [[]]
@@ -52,6 +62,19 @@ class Utilities {
             }
         }
         return products
+    }
+    
+    static func getReservationFromUserDefaults() -> [Product] {
+        var reservation: [Product] = []
+        if let data = UserDefaults.standard.data(forKey: "reservation") {
+            do {
+                let decoder = JSONDecoder()
+                reservation = try decoder.decode([Product].self, from: data)
+            } catch {
+                print("Unable to Decode Notes (\(error))")
+            }
+        }
+        return reservation
     }
 
 }

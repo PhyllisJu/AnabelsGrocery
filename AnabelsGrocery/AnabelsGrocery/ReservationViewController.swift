@@ -7,14 +7,47 @@
 
 import UIKit
 
-class ReservationViewController: UIViewController {
+class ReservationViewController: UIViewController, ShoppingCartViewControllerDelegate {
+
+    
     var totalPrice : Float = 0.0
+    var itemsInOrder = [Product]()
     let pickupLabel = UILabel()
     let addressLabel = UILabel()
     let hoursLabel = UILabel()
     let priceLabel = UILabel()
     let cancelBtn = UIButton()
     let stackView = UIStackView()
+    
+    let cellReuseID = "cellReuseID"
+    
+    func passDataToReservation(data: [Product]) {
+        itemsInOrder = data
+    }
+    
+    init(itemsInOrder: [Product]) {
+        self.itemsInOrder = itemsInOrder
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    lazy var collectionView: UICollectionView = {
+            let layout = UICollectionViewFlowLayout()
+            layout.scrollDirection = .horizontal
+            layout.minimumInteritemSpacing = 10
+            
+            let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+            collectionView.translatesAutoresizingMaskIntoConstraints = false
+            collectionView.backgroundColor = .white
+            collectionView.delegate = self
+            collectionView.dataSource = self
+            
+            collectionView.register(ReservationCollectionViewCell.self, forCellWithReuseIdentifier: cellReuseID)
+            
+            return collectionView
+        }()
     // TODO: Add a tableview of reserved items
 
     override func viewDidLoad() {
@@ -73,6 +106,8 @@ class ReservationViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stackView)
         
+        view.addSubview(collectionView)
+        updateCollectionView(data: itemsInOrder)
         setupConstraints()
     }
     
@@ -80,11 +115,19 @@ class ReservationViewController: UIViewController {
         super.viewWillAppear(animated)
         totalPrice = UserDefaults.standard.float(forKey: "totalPrice")
         priceLabel.text = "Total Price: " + String(format: "$%.2f", totalPrice)
+        itemsInOrder = Utilities.getReservationFromUserDefaults()
+        collectionView.reloadData()
     }
     
     @objc func onCancel() {
         // TODO: delete request
     }
+    
+    func updateCollectionView(data: [Product]) {
+        itemsInOrder = data
+        collectionView.reloadData()
+    }
+    
     
     func setupConstraints() {
         let padding = 16.0
@@ -117,6 +160,13 @@ class ReservationViewController: UIViewController {
         ])
         
         NSLayoutConstraint.activate([
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            collectionView.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: padding),
+            collectionView.heightAnchor.constraint(equalToConstant: 180)
+        ])
+        
+        NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
@@ -125,3 +175,35 @@ class ReservationViewController: UIViewController {
     }
 
 }
+
+extension ReservationViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return itemsInOrder.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseID, for: indexPath) as! ReservationCollectionViewCell
+            
+            let product = itemsInOrder[indexPath.item]
+            cell.update(product: product)
+            
+            return cell
+        }
+}
+
+extension ReservationViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+            let len = (view.frame.width - 2 * 10 - 5 - 30) / 2
+            return CGSize(width: len, height: len+10)
+    }
+}
+
+//extension ReservationViewController: UICollectionViewDelegate {
+//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//
+//    }
+//}
