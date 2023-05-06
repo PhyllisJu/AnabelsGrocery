@@ -32,15 +32,11 @@ class MenuViewController: UIViewController {
         
         // sample data initialization
         products = Utilities.getProductsFromUserDefaults()
-//        menus = [
-//            Menu(id: 1, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 1", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
-//            Menu(id: 2, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 2 Long Long Name", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
-//            Menu(id: 3, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 3", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
-//            Menu(id: 4, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 4", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
-//            Menu(id: 5, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 5", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
-//            Menu(id: 6, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 6", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: []),
-//            Menu(id: 7, image: ImageResponse(url: "sample", created_at: "123"), name: "Recipe 7", description: "This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description. This is a placeholder menu description.", inventories: [])
-//        ]
+        menus = [
+            Menu(id: 1, image: ImageResponse(url: "sample", created_at: "123"), name: "Spaghetti Bolognese", description: "1. Heat oil in a large saucepan over medium-high heat. \n2. Add onion and garlic. Cook, stirring, for 3 minutes or until onion has softened. \n3. Add beef mince. Cook, stirring with a wooden spoon to break up mince, for 8 to 10 minutes or until browned and cooked through. \n4. Add tomatoes, tomato paste, oregano and basil to the pan. Stir to combine. Bring to the boil. Reduce heat to low. Simmer, uncovered, for 30 minutes or until the sauce has thickened. \n5. Meanwhile, cook spaghetti in a large saucepan of boiling, salted water, following packet directions, until tender. Drain. \n6. Divide spaghetti between bowls. Top with bolognese sauce. Serve with grated parmesan and fresh basil leaves, if desired.", inventories: []),
+            Menu(id: 2, image: ImageResponse(url: "sample", created_at: "123"), name: "Chicken Curry", description: "1. Heat oil in a large saucepan over medium-high heat. \n2. Add onion and garlic. Cook, stirring, for 3 minutes or until onion has softened. \n3. Add chicken. Cook, stirring occasionally, for 5 minutes or until browned. \n4. Add curry paste. Cook, stirring, for 1 minute or until fragrant. \n5. Add coconut milk, water and potatoes. Bring to the boil. Reduce heat to medium-low. Simmer, partially covered, for 20 to 25 minutes or until potatoes are tender. \n6. Serve curry with steamed rice and naan bread.", inventories: []),
+            Menu(id: 3, image: ImageResponse(url: "sample", created_at: "123"), name: "Caesar Salad", description: "1. Preheat the oven to 180°C/160°C fan-forced. Place bread on a baking tray. Spray with oil. Bake for 10 to 12 minutes or until golden and crisp. \n2. Meanwhile, make dressing: Place garlic, anchovies and egg yolks in a food processor. Process until smooth. With the motor running, add oil in a slow, steady stream until thick and creamy. Add lemon juice. Process until combined. Season with salt and pepper. \n3. Place lettuce, bacon, parmesan and croutons in a large bowl. Add dressing. Toss to combine. Serve.", inventories: [])
+        ]
         
         
         
@@ -70,7 +66,7 @@ class MenuViewController: UIViewController {
         addButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(addButton)
         
-        createMenus()
+        //createMenus()
         setUpConstraints()
     }
     

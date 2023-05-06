@@ -23,7 +23,7 @@ class MenuCollectionViewCell: UICollectionViewCell {
         menuImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(menuImageView)
         
-        nameLabel.font = .systemFont(ofSize: 18)
+        nameLabel.font = .systemFont(ofSize: 15)
         nameLabel.textColor = .black
         nameLabel.lineBreakMode = .byWordWrapping
         nameLabel.numberOfLines = 2

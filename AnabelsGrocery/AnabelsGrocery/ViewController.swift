@@ -121,7 +121,7 @@ class ViewController: UIViewController {
         NetworkManager.shared.getAllProducts { products in
             DispatchQueue.main.async {
                 self.shownDummyData = products
-                for _ in 0..<self.initialSections.count-1 {
+                for _ in 0..<self.initialProducts.count-1 {
                     self.shownProducts.append([])
                 }
                 for p in self.shownDummyData {
