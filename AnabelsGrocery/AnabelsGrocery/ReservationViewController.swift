@@ -23,11 +23,11 @@ class ReservationViewController: UIViewController, ShoppingCartViewControllerDel
     let cellReuseID = "cellReuseID"
     
     func passDataToReservation(data: [Product]) {
-        itemsInOrder = data
+        //itemsInOrder = data
     }
     
     init(itemsInOrder: [Product]) {
-        self.itemsInOrder = itemsInOrder
+        self.itemsInOrder = []
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -127,16 +127,32 @@ class ReservationViewController: UIViewController, ShoppingCartViewControllerDel
         totalPrice = UserDefaults.standard.float(forKey: "totalPrice")
         priceLabel.text = "Total Price: " + String(format: "$%.2f", totalPrice)
         itemsInOrder = Utilities.getReservationFromUserDefaults()
+        collectionView.isHidden = false
         collectionView.reloadData()
+        print(itemsInOrder.count)
     }
     
     @objc func onClear() {
         // TODO: clear the reservation page
         print("clicked")
+        Utilities.updateReservationFromUserDefaults(newArray: [])
+        UserDefaults.standard.set(0.00, forKey: "totalPrice")
+        priceLabel.text = "$0.00"
+        collectionView.isHidden = true
+        collectionView.reloadData()
+        var products = Utilities.getProductsFromUserDefaults()
+        // create order
+        for i in 0..<products.count {
+            for j in 0..<products[i].count {
+                products[i][j].selectedNum = 0
+            }
+        }
+        Utilities.updateProductsFromUserDefaults(newProducts: products)
+        itemsInOrder = []
     }
     
     func updateCollectionView(data: [Product]) {
-        itemsInOrder = data
+        //itemsInOrder = data
         collectionView.reloadData()
     }
     
@@ -185,6 +201,7 @@ class ReservationViewController: UIViewController, ShoppingCartViewControllerDel
             stackView.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
+    
 
 }
 

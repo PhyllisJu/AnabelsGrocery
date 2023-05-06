@@ -119,6 +119,7 @@ class ShoppingCartViewController: UIViewController {
         }
         
         Utilities.updateProductsFromUserDefaults(newProducts: products)
+        print(allSelectedNumZero())
         
         // reset totalPrice value and products in user defaults
         totalPrice = 0.0

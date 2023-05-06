@@ -171,10 +171,10 @@ class DetailsViewController: UIViewController {
         Utilities.updateProductsFromUserDefaults(newProducts: products)
         messageLabel.text = "Successfully added to the shopping cart!"
         messageLabel.textColor = Utilities.hexStringToUIColor(hex: "#2C3684")
-        if let indices = indicesOf(x: product, array: products) {
-            print(indices[0])
-            print(indices[1])
-        }
+//        if let indices = indicesOf(x: product, array: products) {
+//            print(indices[0])
+//            print(indices[1])
+//        }
     }
     
     func setupConstraints() {

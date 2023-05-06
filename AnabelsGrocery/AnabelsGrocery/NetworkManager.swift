@@ -12,7 +12,7 @@ class NetworkManager {
 
     static let shared = NetworkManager()
 
-    var url = URL(string: "http://127.0.0.1:8002/inventories/")!
+    var url = URL(string: "http://34.150.230.197/inventories/")!
 
     func getAllProducts(completion: @escaping ([Product]) -> Void) {
         var request = URLRequest(url: url)
@@ -26,7 +26,7 @@ class NetworkManager {
                     completion(response.inventories)
                 }
                 catch (let error) {
-                    print(error.localizedDescription)
+                    //print(error.localizedDescription)
                 }
             }
         }
@@ -47,7 +47,7 @@ class NetworkManager {
                     completion(response.menus)
                 }
                 catch (let error) {
-                    print(error.localizedDescription)
+                    //print(error.localizedDescription)
                 }
             }
         }
@@ -85,7 +85,7 @@ class NetworkManager {
                     completion(response)
                 }
                 catch (let error) {
-                    print(error.localizedDescription)
+                    //print(error.localizedDescription)
                 }
             }
         }
@@ -107,16 +107,13 @@ class NetworkManager {
     
             let task = URLSession.shared.dataTask(with: request) { data, response, err in
                 if let data = data {
-                    print(data)
                     do {
                         let decoder = JSONDecoder()
                         let response = try decoder.decode(OrderResponse.self, from: data)
-                        print("2222222222222")
                         completion(response)
                     }
                     catch (let error) {
-                        print(error.localizedDescription)
-                        print("1111111111111")
+                        //print(error.localizedDescription)
 
                     }
     

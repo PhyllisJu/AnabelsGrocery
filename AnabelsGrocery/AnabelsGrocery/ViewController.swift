@@ -125,7 +125,7 @@ class ViewController: UIViewController {
                     self.shownProducts.append([])
                 }
                 for p in self.shownDummyData {
-                    self.shownProducts[p.category-1].append(p)
+                    self.shownProducts[p.category].append(p)
                 }
                 for i in 0..<self.shownProducts.count {
                     for j in 0..<self.shownProducts[i].count {
