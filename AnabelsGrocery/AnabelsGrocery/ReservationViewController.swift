@@ -17,6 +17,7 @@ class ReservationViewController: UIViewController, ShoppingCartViewControllerDel
     let hoursLabel = UILabel()
     let priceLabel = UILabel()
     let cancelBtn = UIButton()
+    let confirmBtn = UIButton()
     let stackView = UIStackView()
     
     let cellReuseID = "cellReuseID"
@@ -83,14 +84,23 @@ class ReservationViewController: UIViewController, ShoppingCartViewControllerDel
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(priceLabel)
         
-        cancelBtn.setTitle("Cancel Reservation", for: .normal)
+        cancelBtn.setTitle("Cancel", for: .normal)
         cancelBtn.backgroundColor = .systemRed
         cancelBtn.layer.cornerRadius = 10.0
         cancelBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         cancelBtn.setTitleColor(.white, for: .normal)
         cancelBtn.setContentHuggingPriority(.required, for: .horizontal)
-        cancelBtn.addTarget(self, action: #selector(onCancel), for: .touchUpInside)
+        cancelBtn.addTarget(self, action: #selector(onClear), for: .touchUpInside)
         cancelBtn.translatesAutoresizingMaskIntoConstraints = false
+        
+        confirmBtn.setTitle("Picked Up", for: .normal)
+        confirmBtn.layer.cornerRadius = 10.0
+        confirmBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+        confirmBtn.setTitleColor(.white, for: .normal)
+        confirmBtn.backgroundColor = Utilities.hexStringToUIColor(hex: "#38AB4A")
+        confirmBtn.setContentHuggingPriority(.required, for: .horizontal)
+        confirmBtn.addTarget(self, action: #selector(onClear), for: .touchUpInside)
+        confirmBtn.translatesAutoresizingMaskIntoConstraints = false
         
         let spacerView = UIView()
         spacerView.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -98,6 +108,7 @@ class ReservationViewController: UIViewController, ShoppingCartViewControllerDel
         
         stackView.addArrangedSubview(spacerView)
         stackView.addArrangedSubview(cancelBtn)
+        stackView.addArrangedSubview(confirmBtn)
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.distribution = .fill
@@ -119,8 +130,9 @@ class ReservationViewController: UIViewController, ShoppingCartViewControllerDel
         collectionView.reloadData()
     }
     
-    @objc func onCancel() {
-        // TODO: delete request
+    @objc func onClear() {
+        // TODO: clear the reservation page
+        print("clicked")
     }
     
     func updateCollectionView(data: [Product]) {
