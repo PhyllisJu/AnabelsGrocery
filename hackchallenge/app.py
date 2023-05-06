@@ -82,7 +82,7 @@ def create_inventory():
 
     db.session.add(new_inventory)
     db.session.commit()
-    return success_response(new_inventory.serialize_all(), 201)
+    return success_response(new_inventory.serialize_for_render(), 201)
 
 
 @app.route("/inventories/<int:inventory_id>/")
@@ -93,7 +93,7 @@ def get_inventory_by_id(inventory_id):
     inventory = Inventory.query.filter_by(id = inventory_id).first()
     if inventory is None:
         return failure_response(f"Task not found {inventory_id}!")
-    return success_response(inventory.serialize_all())
+    return success_response(inventory.serialize_for_render())
 
 
 # -- CATEGORY ROUTES---------------------------------------------------
