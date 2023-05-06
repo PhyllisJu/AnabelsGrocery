@@ -22,6 +22,9 @@ class DetailsViewController: UIViewController {
     var productRow: Int
     var productCol: Int
     
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    
     init(products: [[Product]], row: Int, col: Int) {
         self.products = products
         self.product = products[row][col]
@@ -60,26 +63,34 @@ class DetailsViewController: UIViewController {
         title = product.name
         view.backgroundColor = .white
         
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.contentSize = contentView.bounds.size
+        view.addSubview(scrollView)
+        
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.frame = CGRect(x: 0, y: 0, width: scrollView.contentSize.width, height: scrollView.contentSize.height)
+        scrollView.addSubview(contentView)
+        
         picImageView.image = UIImage(named: product.image)
         picImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(picImageView)
+        contentView.addSubview(picImageView)
         
         nameLabel.text = product.name
         nameLabel.font = .boldSystemFont(ofSize: 30)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(nameLabel)
+        contentView.addSubview(nameLabel)
         
         descriptionTextView.text = product.description
         descriptionTextView.font = .systemFont(ofSize: 16)
         descriptionTextView.isEditable = false
-        descriptionTextView.isScrollEnabled = true
+        descriptionTextView.isScrollEnabled = false
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(descriptionTextView)
+        contentView.addSubview(descriptionTextView)
         
         priceLabel.text = "$\(product.price)"
         priceLabel.font = .boldSystemFont(ofSize: 30)
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(priceLabel)
+        contentView.addSubview(priceLabel)
         
         addButton.setTitle("+", for: .normal)
         addButton.titleLabel?.font = .systemFont(ofSize: 30)
@@ -88,7 +99,7 @@ class DetailsViewController: UIViewController {
         addButton.layer.cornerRadius = 5.0
         addButton.addTarget(self, action: #selector(addQuantity), for: .touchUpInside)
         addButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(addButton)
+        contentView.addSubview(addButton)
         
         subtractButton.setTitle("-", for: .normal)
         subtractButton.titleLabel?.font = .systemFont(ofSize: 35)
@@ -97,14 +108,13 @@ class DetailsViewController: UIViewController {
         subtractButton.layer.cornerRadius = 5.0
         subtractButton.addTarget(self, action: #selector(subtractQuantity), for: .touchUpInside)
         subtractButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(subtractButton)
+        contentView.addSubview(subtractButton)
         
-//        quantityLabel.text = String(product.selectedNum)
         quantityLabel.textAlignment = .center
         quantityLabel.font = .systemFont(ofSize: 20)
         quantityLabel.backgroundColor = .clear
         quantityLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(quantityLabel)
+        contentView.addSubview(quantityLabel)
         
         addToCartButton.setTitle("Confirm", for: .normal)
         addToCartButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
@@ -113,14 +123,14 @@ class DetailsViewController: UIViewController {
         addToCartButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         addToCartButton.addTarget(self, action: #selector(addToCart), for: .touchUpInside)
         addToCartButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(addToCartButton)
+        contentView.addSubview(addToCartButton)
         
         messageLabel.text = ""
         messageLabel.font = UIFont.boldSystemFont(ofSize: 15)
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.numberOfLines = 0
-        view.addSubview(messageLabel)
+        contentView.addSubview(messageLabel)
     
         setupConstraints()
     }
@@ -171,31 +181,46 @@ class DetailsViewController: UIViewController {
         let padding = 16.0
         
         NSLayoutConstraint.activate([
-            picImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            picImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
-            picImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
-            picImageView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9)
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        NSLayoutConstraint.activate([
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
+        
+        NSLayoutConstraint.activate([
+            picImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            picImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
+            picImageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
+            picImageView.heightAnchor.constraint(equalTo: picImageView.widthAnchor, multiplier: picImageView.image!.size.height / picImageView.image!.size.width)
         ])
         
         NSLayoutConstraint.activate([
             nameLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: padding),
-            nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
         ])
         
         NSLayoutConstraint.activate([
             priceLabel.topAnchor.constraint(equalTo: picImageView.bottomAnchor, constant: padding),
-            priceLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
         ])
         
         NSLayoutConstraint.activate([
             descriptionTextView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: padding),
-            descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            descriptionTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            descriptionTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             descriptionTextView.bottomAnchor.constraint(equalTo: addToCartButton.topAnchor, constant: -padding)
         ])
         
         NSLayoutConstraint.activate([
-            subtractButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            subtractButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
             subtractButton.widthAnchor.constraint(equalToConstant: 35),
             subtractButton.heightAnchor.constraint(equalToConstant: 35),
             subtractButton.bottomAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -padding)
@@ -219,7 +244,7 @@ class DetailsViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             addToCartButton.centerYAnchor.constraint(equalTo: subtractButton.centerYAnchor),
-            addToCartButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            addToCartButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             addToCartButton.widthAnchor.constraint(equalToConstant: 140),
             addToCartButton.heightAnchor.constraint(equalToConstant: 50),
             addToCartButton.bottomAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -padding)
@@ -227,9 +252,9 @@ class DetailsViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             messageLabel.topAnchor.constraint(equalTo: subtractButton.bottomAnchor),
-            messageLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            messageLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            messageLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding)
+            messageLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            messageLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            messageLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
         ])
         
     }

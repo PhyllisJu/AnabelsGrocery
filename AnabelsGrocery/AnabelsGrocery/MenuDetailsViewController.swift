@@ -81,7 +81,7 @@ class MenuDetailsViewController: UIViewController {
             picImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             picImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
             picImageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9),
-            picImageView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.9)
+            picImageView.heightAnchor.constraint(equalTo: picImageView.widthAnchor, multiplier: picImageView.image!.size.height / picImageView.image!.size.width)
         ])
         
         NSLayoutConstraint.activate([
