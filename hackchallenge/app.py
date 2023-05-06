@@ -9,9 +9,6 @@ from db import Order
 from db import Orderitem
 from db import Asset
 
-
-
-
 # define db filename
 db_filename = "todo.db"
 app = Flask(__name__) #instiation of an instance of flask
@@ -42,7 +39,6 @@ def failure_response(message, code=404):
 def greet_user():
     return "Hello" + os.environ.get("NAME")
 
-
 @app.route("/inventories/")
 def get_inventories():
     """
@@ -68,10 +64,6 @@ def create_inventory():
         description = body.get("description"),
         price = body.get("price")     
     )
-
-    db.session.add(new_inventory)
-    db.session.commit()
-    return success_response(new_inventory.serialize_for_render(), 201)
 
 
 @app.route("/inventories/<int:inventory_id>/")
@@ -125,32 +117,20 @@ def get_category(category_id):
     """
     Endpoint for getting a category by id
     """
-    category = Category.query.filter_by(id = category_id).first()
-    if category is None:
-        return failure_response("Category not found!")
-    return success_response(category.serialize())
-
+    categories = []
+    for category in Category.query.all(): 
+        categories.append(category.serialize()) 
+    return success_response({"categories": categories})
 
 @app.route("/categories/m/", methods=["GET"])
 def get_categories():
     """
     Endpoint for getting multiple categories by ids
     """
-    length :int = len(request.args)
-    print(length)
-    category_id_list =[]
-    for i in range(length):
-        category_id_list.append(request.args[f"c{i}"])
-
-    response = []
-    for category_id in category_id_list:
-      category = Category.query.filter_by(id = category_id).first()
-      if category is None:
-        return failure_response("Category not found!")
-      response.append(category.serialize())
-      
-    return success_response({"categories": response })
-
+    categories = []
+    for category in Category.query.all(): 
+        categories.append(category.serialize()) 
+    return success_response({"categories": categories})
 
 def update_categories():
     pass
@@ -172,53 +152,10 @@ def create_menu():
     """
     Endpoint for creating a new menu
     """
-    body = json.loads(request.data)  
-
-    image_data = body.get("image_data")
-    if image_data is None:
-        return failure_response("Not Base64 URL")
-    
-    image = Asset(image_data=image_data)
-    db.session.add(image)
-    db.session.commit()
-    
-    new_menu= Menu(
-        name = body.get("name"),
-        description = body.get("description"), 
-        instruction = body.get("instruction"),
-        image_id = image.id
-    )
-
-    db.session.add(new_menu)
-    db.session.commit()
-    return success_response(new_menu.serialize(), 201)
-
-
-@app.route("/menus/<int:menu_id>/")
-def get_menu_by_id(menu_id):
-    """
-    Endpoint for getting a menu by id
-    """
-    menu = Menu.query.filter_by(id = menu_id).first()
-    if menu is None:
-        return failure_response(f"Menu not found {menu_id}!")
-    return success_response(menu.serialize())
-
-
-
-@app.route("/menus/<int:menu_id>/", methods=["DELETE"])
-def delete_menu(menu_id):
-    """
-    Endpoint for delting a menu
-    """
-    menu = Menu.query.filter_by(id = menu_id).first()
-    if menu is None:
-        return failure_response("menu not found!")
-    db.session.delete(menu)
-    db.session.commit()
-    return success_response(menu.serialize())
-
-    
+    menus = []
+    for menu in Menu.query.all(): 
+        menus.append(menu.serialize(Menu(description = "description"))) 
+    return success_response({"menus": menus})
 
 # -- ORDER ROUTES---------------------------------------------------
 @app.route("/orders/", methods=["GET"])
@@ -227,120 +164,37 @@ def get_orders():
     Endpoint for getting all orders
     """
     orders = []
-    for order in Order.query.all(): 
+    for order in Menu.query.all(): 
         orders.append(order.simple_serialize()) 
     return success_response({"orders": orders})
 
+@app.route("/orders/submit/<int:order_id>/", methods=["POST"])
+def submit_order(order_id):
+    """
+    Endpoint for submitting all orderitems with pickup information 
+    """
 
-@app.route("/orders/", methods=["POST"])
-def create_order():
-    """
-    Endpoint for creating a new order
-    """
     body = json.loads(request.data)  
-    new_order= Order(
-        total_price = body.get("total_price", 0),     
-        valid = body.get("total_price", False)
-    )
-
-    new_order = Order()
-
-    db.session.add(new_order)
-    db.session.commit()
-
-    #inventory.type = json
-    inventory_list = body.get("inventories")
-
-    try:
-      for inventory in inventory_list:
-        simlpe_create_orderitem(new_order.id, inventory) 
-    except Exception as e:
-        return failure_response(f"{e}")
-
-    db.session.commit()
-
-    new_order.time_created = datetime.datetime.now()
+    order.user_name =  body.get("user_name")
+    order.time_created = datetime.datetime.now()
     # if the order is created after 19 
-    new_order.valid = True
-
-    db.session.commit()
-
-    return success_response(new_order.simple_serialize(), 201)
-
-
-@app.route("/orders/<int:order_id>/", methods=["GET"])
-def get_order_by_id(order_id):
-    """
-    Endpoint for getting an order by id
-    """
-    order = Order.query.filter_by(id = order_id).first()
-    if order_id is None:
-        return failure_response(f"Task not found {order_id}!")
-    return success_response(order.simple_serialize())
-
-
-@app.route("/orders/<int:order_id>/", methods=["POST"])
-def add_orderitem_to_order(order_id):
-    """
-   Endpoint for adding one orderitem to an existing order
-    """
-
-    body = json.loads(request.data)
-    inventory_id = body.get("inventory_id")
-    num_sel = body.get("num_sel")
+    pick_up_time = order.time_created + datetime.timedelta(days = 1)
+    pick_up_time = pick_up_time.replace(hour =  18, minute= 59, second= 59)
     
-    orderitem = Orderitem.query.filter_by(order_id = order_id, inventory_id = inventory_id ).first()
-
-
-    return failure_response("order item already exists! Use update order item instead")
-
-
-
-@app.route("/orderitems/<int:order_id>/<int:inventory_id>/increase/", methods=["POST"])
-def increase_orderitem(order_id, inventory_id):
-  """
-  Endpoint for increasing the number of an inventory in an order by 1
-  """
-  return update_orderitem(order_id, inventory_id, 1)
-
-
-@app.route("/orderitems/<int:order_id>/<int:inventory_id>/decrease/", methods=["POST"])
-def decrease_orderitem(order_id, inventory_id):
-  """
-  Endpoint for decreasing the number of an inventory in an order by 1
-  """
-  return update_orderitem(order_id, inventory_id, -1)
-
-
-def update_orderitem(order_id, inventory_id, num_sel_diff):
-    """
-    Update the  the number of an inventory in an order by num_sel_diff
-    """
-    order = Order.query.filter_by(id = order_id).first()
-    if order is None:
-        return failure_response("Order not found!")
-    
-    inventory = Inventory.query.filter_by(id = inventory_id).first()
-    if inventory is None:
-        return failure_response("Inventory not found!")
-
-    orderitem = Orderitem.query.filter_by(order_id = order_id, inventory_id = inventory_id ).first()
-    if orderitem is None:
-        return failure_response("Order not found!")
-
-    orderitem.num_sel += num_sel_diff
-    price_diff = num_sel_diff * inventory.price
-    order.total_price += price_diff
-    db.session.commit()
-
-    if orderitem.num_sel == 0:
-      delete_orderitem(order_id, inventory_id)
-
-    db.session.commit()
 
     return success_response(order.serialize())
 
-    
+# -- ORDERITEM ROUTES---------------------------------------------------
+@app.route("/orderitems/", methods=["GET"])
+def get_orderitems():
+    """
+    Endpoint for getting all orderitems
+    """
+    orderitems = []
+    for orderitem in Menu.query.all(): 
+        orderitems.append(orderitem.serialize()) 
+    return success_response({"orderitems": orderitems})
+
 @app.route("/orderitems/<int:order_id>/<int:inventory_id>/", methods=["DELETE"])
 def delete_orderitem(order_id, inventory_id):
     """
@@ -348,23 +202,14 @@ def delete_orderitem(order_id, inventory_id):
     if order.order_items is empty, delte the order
 
     """
-    order = Order.query.filter_by(id = order_id).first()
-    if order is None:
-        return failure_response("Order not found!")
-
-    orderitem = Orderitem.query.filter_by(order_id = order_id, inventory_id = inventory_id ).first()
-    if orderitem is None:
-        return failure_response("Order not found!")
-    
-    if orderitem.num_sel > 0:
-        return failure_response("Can't delte orderitem since the number selected is larger than 0")
-
-    db.session.delete(orderitem)
-    db.session.commit()
-    #check if the order_items of order is empty: if empty delte the order
     if len(order.order_items) == 0:
         delete_order(order_id)
 
     return success_response(order.serialize())
+
+
+    
+
+
 
 
